@@ -1,9 +1,6 @@
 package com.tc.reptile.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.io.InputStream;
 
@@ -20,6 +17,7 @@ public class ArticleContentEntity implements Serializable {
 	private static final long serialVersionUID =  7380510781684918519L;
 
    	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id" )
 	private Long id;
 
@@ -27,7 +25,7 @@ public class ArticleContentEntity implements Serializable {
 	 * 文章详细内容
 	 */
    	@Column(name = "content" )
-	private InputStream content;
+	private String content;
 
 
 	public static long getSerialVersionUID() {
@@ -42,11 +40,15 @@ public class ArticleContentEntity implements Serializable {
 		this.id = id;
 	}
 
-	public InputStream getContent() {
+
+	@Lob
+	@Basic(fetch=FetchType.LAZY)
+	@Column(columnDefinition="BLOB",nullable=true)
+	public String getContent() {
 		return content;
 	}
 
-	public void setContent(InputStream content) {
+	public void String(String content) {
 		this.content = content;
 	}
 }

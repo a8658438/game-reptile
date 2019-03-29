@@ -1,9 +1,6 @@
 package com.tc.reptile.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 
 /**
@@ -19,6 +16,7 @@ public class WebInfoEntity implements Serializable {
 	private static final long serialVersionUID =  7506170567919262238L;
 
    	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id" )
 	private Long id;
 
@@ -40,8 +38,19 @@ public class WebInfoEntity implements Serializable {
    	@Column(name = "web_name" )
 	private String webName;
 
+   	@Column(name = "article_url")
+	private String articleUrl;
+
 	public static long getSerialVersionUID() {
 		return serialVersionUID;
+	}
+
+	public String getArticleUrl() {
+		return articleUrl;
+	}
+
+	public void setArticleUrl(String articleUrl) {
+		this.articleUrl = articleUrl;
 	}
 
 	public Long getId() {

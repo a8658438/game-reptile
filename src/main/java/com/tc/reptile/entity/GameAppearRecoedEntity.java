@@ -1,9 +1,6 @@
 package com.tc.reptile.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 
 /**
@@ -19,6 +16,7 @@ public class GameAppearRecoedEntity implements Serializable {
 	private static final long serialVersionUID =  4807268259340580889L;
 
    	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id" )
 	private Long id;
 

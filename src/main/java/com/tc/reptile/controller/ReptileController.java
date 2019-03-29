@@ -1,5 +1,6 @@
 package com.tc.reptile.controller;
 
+import com.tc.reptile.service.ReptileService;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -11,11 +12,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/reptile")
 public class ReptileController {
+    private final ReptileService reptileService;
 
+    public ReptileController(ReptileService reptileService) {
+        this.reptileService = reptileService;
+    }
 
     @RequestMapping("/start")
     public String startReptile(){
-
+        reptileService.reptile();
         return "200";
     }
 }
