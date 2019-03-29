@@ -1,21 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="344c3542-200f-4ef1-bed6-dd816b338e7c" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/tc/reptile/dao/ArticleInfoDao.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/tc/reptile/util/DateUtil.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/game-reptile.iml" beforeDir="false" afterPath="$PROJECT_DIR$/game-reptile.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql/reptile.sql" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/tc/reptile/controller/ReptileController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/tc/reptile/controller/ReptileController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/tc/reptile/entity/ArticleContentEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/tc/reptile/entity/ArticleContentEntity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/tc/reptile/entity/ArticleInfoEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/tc/reptile/entity/ArticleInfoEntity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/tc/reptile/entity/GameAppearRecoedEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/tc/reptile/entity/GameAppearRecoedEntity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/tc/reptile/entity/GameInfoEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/tc/reptile/entity/GameInfoEntity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/tc/reptile/entity/WebInfoEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/tc/reptile/entity/WebInfoEntity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/tc/reptile/service/ReptileService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/tc/reptile/service/ReptileService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/com/tc/reptile/ReptileApplicationTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/tc/reptile/ReptileApplicationTests.java" afterDir="false" />
-    </list>
+    <list default="true" id="344c3542-200f-4ef1-bed6-dd816b338e7c" name="Default Changelist" comment="" />
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/target/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -396,7 +382,7 @@
     <property name="RequestMappingsPanelWidth1" value="75" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1553870328192" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1553870331920" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/src/main/java/com/tc/reptile/entity" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="F:/chensrWork/学习资料/node.js/node" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
@@ -513,7 +499,7 @@
       <updated>1553775581320</updated>
       <workItem from="1553775588120" duration="3787000" />
       <workItem from="1553828103065" duration="14097000" />
-      <workItem from="1553864277446" duration="6046000" />
+      <workItem from="1553864277446" duration="6082000" />
     </task>
     <servers />
   </component>
@@ -550,7 +536,7 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="23930000" />
+    <option name="totallyTimeSpent" value="23966000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
