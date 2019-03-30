@@ -48,6 +48,10 @@ public class ArticleContentEntity implements Serializable {
 		return content;
 	}
 
+	public void setContent(String content) {
+		this.content = content;
+	}
+
 	public void String(String content) {
 		this.content = content;
 	}

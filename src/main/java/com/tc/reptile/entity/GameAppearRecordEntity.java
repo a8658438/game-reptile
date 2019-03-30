@@ -10,8 +10,8 @@ import java.io.Serializable;
  */
 
 @Entity
-@Table ( name ="game_appear_recoed" )
-public class GameAppearRecoedEntity implements Serializable {
+@Table ( name ="game_appear_record" )
+public class GameAppearRecordEntity implements Serializable {
 
 	private static final long serialVersionUID =  4807268259340580889L;
 
@@ -23,8 +23,8 @@ public class GameAppearRecoedEntity implements Serializable {
 	/**
 	 * 游戏名称ID
 	 */
-   	@Column(name = "game_id" )
-	private Long gameId;
+   	@Column(name = "game_name" )
+	private String gameName;
 
 	/**
 	 * 发布时间
@@ -50,12 +50,12 @@ public class GameAppearRecoedEntity implements Serializable {
 		this.id = id;
 	}
 
-	public Long getGameId() {
-		return gameId;
+	public String getGameName() {
+		return gameName;
 	}
 
-	public void setGameId(Long gameId) {
-		this.gameId = gameId;
+	public void setGameName(String gameName) {
+		this.gameName = gameName;
 	}
 
 	public Integer getReleaseTime() {

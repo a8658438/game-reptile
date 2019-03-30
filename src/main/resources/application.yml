@@ -8,3 +8,6 @@ spring:
     show-sql: true
 logging:
   path: logs
+
+reptile:
+  read-time: 2019-3-29

@@ -20,7 +20,7 @@ public class ReptileController {
 
     @RequestMapping("/start")
     public String startReptile(){
-        reptileService.reptile();
+        reptileService.reptileArticleList();
         return "200";
     }
 }

@@ -1,6 +1,7 @@
 package com.tc.reptile.entity;
 
 import javax.persistence.*;
+import javax.persistence.criteria.CriteriaBuilder;
 import java.io.Serializable;
 
 /**
@@ -19,6 +20,12 @@ public class ArticleInfoEntity implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id" )
 	private Long id;
+
+	/**
+	 * 来源
+	 */
+	@Column(name = "source_id" )
+	private Long sourceId;
 
 	/**
 	 * 来源
@@ -51,6 +58,12 @@ public class ArticleInfoEntity implements Serializable {
 	private String author;
 
 	/**
+	 * 状态
+	 */
+	@Column(name = "status")
+	private Integer status;
+
+	/**
 	 * 创建时间
 	 */
    	@Column(name = "create_time" )
@@ -59,6 +72,22 @@ public class ArticleInfoEntity implements Serializable {
 
 	public static long getSerialVersionUID() {
 		return serialVersionUID;
+	}
+
+	public Long getSourceId() {
+		return sourceId;
+	}
+
+	public Integer getStatus() {
+		return status;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
+	}
+
+	public void setSourceId(Long sourceId) {
+		this.sourceId = sourceId;
 	}
 
 	public Long getId() {

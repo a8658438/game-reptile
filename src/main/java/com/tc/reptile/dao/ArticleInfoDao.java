@@ -3,6 +3,7 @@ package com.tc.reptile.dao;
 import com.tc.reptile.entity.ArticleInfoEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -12,4 +13,6 @@ import java.util.Optional;
  */
 public interface ArticleInfoDao extends JpaRepository<ArticleInfoEntity, Long> {
     Optional<ArticleInfoEntity> findByUrl(String url);
+
+    List<ArticleInfoEntity> findAllByStatus(Integer status);
 }
