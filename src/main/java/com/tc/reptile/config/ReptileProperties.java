@@ -11,6 +11,24 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "reptile")
 public class ReptileProperties {
     private String readTime;
+    private String account;
+    private String password;
+
+    public String getAccount() {
+        return account;
+    }
+
+    public void setAccount(String account) {
+        this.account = account;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
     public Integer getReadTime() {
         return DateUtil.getDateSecond(readTime, DateUtil.FORMAT_TYPE_1);
