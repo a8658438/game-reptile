@@ -6,6 +6,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 import java.util.Map;
@@ -27,8 +28,12 @@ public class HttpUtil {
      * @param param
      * @return: java.util.Optional<com.alibaba.fastjson.JSONArray>
     */
-    public static Optional<JSONArray> getDataForJson(String url, Map<String,String> param) {
-        String response = restTemplate.getForObject(url, String.class, param);
+    public static Optional<JSONArray> getDataForJson(String url, Map<String,Object> param) {
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
+        param.forEach((k,v) -> {
+            builder.queryParam(k, v);
+        });
+        String response = restTemplate.getForObject(builder.build().encode().toUri(), String.class);
 
         // 解析数据保存数据
         JSONObject json = JSONObject.parseObject(response);

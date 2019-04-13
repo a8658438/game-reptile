@@ -7,6 +7,8 @@ import org.joda.time.format.DateTimeFormatter;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @Author: Chensr
@@ -14,7 +16,7 @@ import java.time.ZoneId;
  * @Date: Create in 21:26 2019/3/29
  */
 public class DateUtil {
-    public static final String FORMAT_TYPE_1 ="yyyy-MM-dd";
+    public static final String FORMAT_TYPE_1 = "yyyy-MM-dd";
 
     /***
      * @Author: Chensr
@@ -35,11 +37,17 @@ public class DateUtil {
      * @return: java.lang.Integer
      */
     public static Integer getDateSecond(String date, String format) {
-        DateTimeFormatter formatter = DateTimeFormat.forPattern(format);
-        try {
-            return  (int) (DateTime.parse(date, formatter).getMillis() / 1000);
-        } catch (Exception e) {
-            return DateUtil.getCurrentSecond();
+        // 取得字符串中的数字
+        Pattern p = Pattern.compile("[^0-9]");
+        Matcher m = p.matcher(date);
+        String num = m.replaceAll("");
+        if (date.contains("天")) {
+            return DateUtil.getCurrentSecond() - Integer.parseInt(num) * 60 * 60 * 24;
+        } else if (date.contains("小时")) {
+            return DateUtil.getCurrentSecond() - Integer.parseInt(num) * 60 * 60;
+        } else {
+            DateTimeFormatter formatter = DateTimeFormat.forPattern(format);
+            return (int) (DateTime.parse(date, formatter).getMillis() / 1000);
         }
     }
 }

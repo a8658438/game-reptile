@@ -10,6 +10,7 @@ public class YystvConstant {
     public static final String ARTICLE_CREATETIME = "createtime";
     public static final String ARTICLE_AUTHOR = "author";
     public static final String ARTICLE_TITLE = "title";
+    public static final String HOT_CLASS = "doc-agrees-count";
 //    public static final String ARTICLE_;
 //    public static final String ARTICLE_;
 //    public static final String ARTICLE_;

@@ -1,5 +1,6 @@
 package com.tc.reptile.service;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.tc.reptile.config.ReptileProperties;
 import com.tc.reptile.constant.ArticleStatusEnum;
@@ -15,17 +16,17 @@ import com.tc.reptile.entity.WebInfoEntity;
 import com.tc.reptile.util.DateUtil;
 import com.tc.reptile.util.HttpUtil;
 import com.tc.reptile.util.RegexUtil;
-import org.jsoup.Jsoup;
+import com.vdurmont.emoji.EmojiParser;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.util.StringUtils;
 
-import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @Author: Chensr
@@ -36,7 +37,6 @@ import java.util.*;
 public class ReptileService {
     private Logger logger = LoggerFactory.getLogger(ReptileService.class);
 
-    private final RestTemplate restTemplate = new RestTemplate();
     private final WebInfoDao webInfoDao;
     private final ArticleInfoDao articleInfoDao;
     private final ReptileProperties properties;
@@ -59,44 +59,42 @@ public class ReptileService {
      * @return: void
      */
     @Transactional
-    public void reptileArticleList() {
-        Optional<WebInfoEntity> optional = webInfoDao.findById(1L);
-        Map<String, String> param = new HashMap<>();
-        param.put("page", "1");
+    public boolean reptileArticleList(WebInfoEntity webInfoEntity, Map<String, Object> param) {
+        List<ArticleInfoEntity> list = new ArrayList<>();
+        boolean flag = true;
+        // 查询数据
+        Optional<JSONArray> data = HttpUtil.getDataForJson(webInfoEntity.getUrl(), param);
+        if (!data.isPresent()) {
+            return false;
+        }
+        JSONArray array = data.get();
+        for (Object o : array) {
 
-        optional.ifPresent(webInfoEntity -> {
-            List<ArticleInfoEntity> list = new ArrayList<>();
+            JSONObject article = (JSONObject) o;
+            // 查询文章是否存在或者 是否是过旧的数据
+            String articleUrl = webInfoEntity.getArticleUrl() + article.get(YystvConstant.ARTICLE_ID);
+            Integer releaseTime = DateUtil.getDateSecond((String) article.get(YystvConstant.ARTICLE_CREATETIME), DateUtil.FORMAT_TYPE_1);
 
-            HttpUtil.getDataForJson(webInfoEntity.getUrl(), param).ifPresent(array -> {
-                array.forEach(o -> {
-                    JSONObject article = (JSONObject) o;
-                    // 查询文章是否存在或者 是否是过旧的数据
-                    String articleUrl = webInfoEntity.getArticleUrl() + article.get(YystvConstant.ARTICLE_ID);
-                    Integer releaseTime = DateUtil.getDateSecond((String) article.get(YystvConstant.ARTICLE_CREATETIME), DateUtil.FORMAT_TYPE_1);
+            // 判断是否达到停止爬取的条件
+            if (stopReptile(webInfoEntity.getLastTime(), releaseTime, articleUrl)) {
+                flag = false;
+                break;
+            }
 
-                    // 判断是否达到停止爬取的条件
-                    if (stopReptile(webInfoEntity.getLastTime(), releaseTime, articleUrl)) {
-                        webInfoEntity.setLastTime(DateUtil.getCurrentSecond());
-                        webInfoDao.save(webInfoEntity);
-                        return;
-                    }
+            ArticleInfoEntity articleInfo = new ArticleInfoEntity();
+            articleInfo.setAuthor((String) article.get(YystvConstant.ARTICLE_AUTHOR));
+            articleInfo.setCreateTime(DateUtil.getCurrentSecond());
+            articleInfo.setReleaseTime(releaseTime);
+            articleInfo.setSourceId(webInfoEntity.getId());
+            articleInfo.setSource(webInfoEntity.getWebName());
+            articleInfo.setTitle((String) article.get(YystvConstant.ARTICLE_TITLE));
+            articleInfo.setUrl(articleUrl);
+            articleInfo.setStatus(ArticleStatusEnum.NOT_YET.getStatus());
+            list.add(articleInfo);
+        }
 
-                    ArticleInfoEntity articleInfo = new ArticleInfoEntity();
-                    articleInfo.setAuthor((String) article.get(YystvConstant.ARTICLE_AUTHOR));
-                    articleInfo.setCreateTime(DateUtil.getCurrentSecond());
-                    articleInfo.setReleaseTime(releaseTime);
-                    articleInfo.setSourceId(webInfoEntity.getId());
-                    articleInfo.setSource(webInfoEntity.getWebName());
-                    articleInfo.setTitle((String) article.get(YystvConstant.ARTICLE_TITLE));
-                    articleInfo.setUrl(articleUrl);
-                    articleInfo.setStatus(ArticleStatusEnum.NOT_YET.getStatus());
-                    list.add(articleInfo);
-
-                });
-            });
-
-            articleInfoDao.saveAll(list);
-        });
+        articleInfoDao.saveAll(list);
+        return flag;
     }
 
     /***
@@ -111,13 +109,12 @@ public class ReptileService {
         List<ArticleInfoEntity> articleList = articleInfoDao.findAllByStatus(ArticleStatusEnum.NOT_YET.getStatus());
         for (ArticleInfoEntity article : articleList) {
             try {
-                String html = HttpUtil.getDocument(article.getUrl(), "http://www.yystv.cn/").html();
-                saveGameData(article, html);
+                saveGameData(article, HttpUtil.getDocument(article.getUrl(), "http://www.yystv.cn/"));
 
                 // 睡眠2秒，防止被网站拉进黑名单
                 Thread.sleep(2000);
             } catch (Exception e) {
-                logger.error(e.getMessage(), e.getStackTrace());
+                logger.error(e.getMessage(), e);
             }
         }
 
@@ -132,7 +129,8 @@ public class ReptileService {
      * @return: void
      */
     @Transactional
-    public void saveGameData(ArticleInfoEntity articleInfoEntity, String html) {
+    public void saveGameData(ArticleInfoEntity articleInfoEntity, Document document) {
+        String html = document.html();
         // 保存文章提到的游戏
         List<GameAppearRecordEntity> recordList = new ArrayList<>();
         RegexUtil.getGames(html).forEach(game -> {
@@ -146,10 +144,15 @@ public class ReptileService {
 
         // 保存文章内容
         ArticleContentEntity content = new ArticleContentEntity();
-        content.setContent(html);
+        content.setContent(html); // 过滤掉emoji表情，防止报错
         contentDao.save(content);
 
-        // 更新文章状态
+        // 更新文章状态和点赞次数
+        Elements tags = document.getElementsByClass(YystvConstant.HOT_CLASS);
+        if (!tags.isEmpty()) {
+            String count = tags.get(0).html();
+            articleInfoEntity.setHot(StringUtils.isEmpty(count) ? 0 : Integer.parseInt(count));
+        }
         articleInfoEntity.setStatus(ArticleStatusEnum.ALREADY.getStatus());
         articleInfoDao.save(articleInfoEntity);
     }
@@ -167,4 +170,5 @@ public class ReptileService {
         Optional<ArticleInfoEntity> infoEntity = articleInfoDao.findByUrl(articleUrl);
         return infoEntity.isPresent() || (reptileLastTime != null && releaseTime < reptileLastTime) || releaseTime < properties.getReadTime();
     }
+
 }

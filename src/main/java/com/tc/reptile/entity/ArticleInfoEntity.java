@@ -57,6 +57,12 @@ public class ArticleInfoEntity implements Serializable {
    	@Column(name = "author" )
 	private String author;
 
+   	/**
+	 * 热度
+	 */
+   	@Column(name = "hot" )
+	private Integer hot;
+
 	/**
 	 * 状态
 	 */
@@ -144,5 +150,13 @@ public class ArticleInfoEntity implements Serializable {
 
 	public void setCreateTime(Integer createTime) {
 		this.createTime = createTime;
+	}
+
+	public Integer getHot() {
+		return hot;
+	}
+
+	public void setHot(Integer hot) {
+		this.hot = hot;
 	}
 }

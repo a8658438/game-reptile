@@ -43,7 +43,7 @@ public class ArticleContentEntity implements Serializable {
 
 	@Lob
 	@Basic(fetch=FetchType.LAZY)
-	@Column(columnDefinition="BLOB",nullable=true)
+	@Column(columnDefinition="LONGTEXT",nullable=true)
 	public String getContent() {
 		return content;
 	}
