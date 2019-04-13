@@ -29,4 +29,9 @@ public class ArticleInfoController {
         PageDTO<ArticleInfoEntity> data = service.pageArticleList(param, page);
         return ResultVO.of(data);
     }
+
+    @PostMapping("/content")
+    public ResultVO getContent(Long articleId){
+        return ResultVO.of(service.getContentByArticleId(articleId).get());
+    }
 }

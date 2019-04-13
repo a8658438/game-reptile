@@ -30,7 +30,12 @@ public class ArticleInfoJdbcDaoImpl extends JdbcDaoSupport implements ArticleInf
     }
 
     public PageDTO<ArticleInfoEntity> pageArticleList(ArticleParam param, PageParam page) {
-        StringBuilder sql = new StringBuilder(" from article_info t where t.status = 1");
+        StringBuilder sql = new StringBuilder(" from article_info t");
+        if (!StringUtils.isEmpty(param.getContent())) {
+            sql.append(" left join article_content c on t.id = c.article_id ");
+        }
+
+        sql.append("  where t.status = 1");
         List<Object> params = new ArrayList<>();
         if (param.getSourceId() != null) {
             sql.append(" and t.source_id = ?");
@@ -48,6 +53,11 @@ public class ArticleInfoJdbcDaoImpl extends JdbcDaoSupport implements ArticleInf
             sql.append(" and t.title like concat('%',?,'%')");
             params.add(param.getTitle());
         }
+        if (!StringUtils.isEmpty(param.getContent())) {
+            sql.append(" and c.content like concat('%',?,'%')");
+            params.add(param.getContent());
+        }
+
         String countSql = "select count(1) " + sql;
         logger.info("count with SQL: {},param:{}", countSql, params.toArray());
         Long total = getJdbcTemplate().queryForObject(countSql, params.toArray(), Long.class);
@@ -56,7 +66,7 @@ public class ArticleInfoJdbcDaoImpl extends JdbcDaoSupport implements ArticleInf
         params.add(page.getPage() - 1);
         params.add(page.getPageSize());
 
-        String querySql = "select * " + sql;
+        String querySql = "select t.* " + sql;
         logger.info(" data with SQL: {},param:{}", querySql, params.toArray());
         List<ArticleInfoEntity> result = getJdbcTemplate().query(querySql, params.toArray(), new BeanPropertyRowMapper<>(ArticleInfoEntity.class));
         return PageDTO.of(total, result);

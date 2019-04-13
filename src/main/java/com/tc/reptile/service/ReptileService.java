@@ -145,6 +145,7 @@ public class ReptileService {
         // 保存文章内容
         ArticleContentEntity content = new ArticleContentEntity();
         content.setContent(html); // 过滤掉emoji表情，防止报错
+        content.setArticleId(articleInfoEntity.getId());
         contentDao.save(content);
 
         // 更新文章状态和点赞次数

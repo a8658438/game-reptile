@@ -26,6 +26,12 @@ public class ArticleContentEntity implements Serializable {
 	 */
    	@Column(name = "content" )
 	private String content;
+   	/**
+	 * 文章ID
+	 */
+   	@Column(name = "article_id" )
+	private Long articleId;
+
 
 
 	public static long getSerialVersionUID() {
@@ -54,5 +60,13 @@ public class ArticleContentEntity implements Serializable {
 
 	public void String(String content) {
 		this.content = content;
+	}
+
+	public Long getArticleId() {
+		return articleId;
+	}
+
+	public void setArticleId(Long articleId) {
+		this.articleId = articleId;
 	}
 }
