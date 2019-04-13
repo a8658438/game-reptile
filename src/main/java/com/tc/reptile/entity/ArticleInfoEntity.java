@@ -45,6 +45,17 @@ public class ArticleInfoEntity implements Serializable {
    	@Column(name = "url" )
 	private String url;
 
+   	/**
+	 * 文章缩略图
+	 */
+   	@Column(name = "image_url" )
+	private String imageUrl;
+   	/**
+	 * 文章分类
+	 */
+   	@Column(name = "type" )
+	private String type;
+
 	/**
 	 * 发布时间
 	 */
@@ -78,6 +89,22 @@ public class ArticleInfoEntity implements Serializable {
 
 	public static long getSerialVersionUID() {
 		return serialVersionUID;
+	}
+
+	public String getImageUrl() {
+		return imageUrl;
+	}
+
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 
 	public Long getSourceId() {

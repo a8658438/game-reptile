@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.tc.reptile.config.ReptileProperties;
 import com.tc.reptile.constant.ArticleStatusEnum;
+import com.tc.reptile.constant.YystvBordEnum;
 import com.tc.reptile.constant.YystvConstant;
 import com.tc.reptile.dao.ArticleContentDao;
 import com.tc.reptile.dao.ArticleInfoDao;
@@ -90,6 +91,8 @@ public class ReptileService {
             articleInfo.setTitle((String) article.get(YystvConstant.ARTICLE_TITLE));
             articleInfo.setUrl(articleUrl);
             articleInfo.setStatus(ArticleStatusEnum.NOT_YET.getStatus());
+            articleInfo.setType(YystvBordEnum.getName((Integer) article.get(YystvConstant.ARTICLE_TYPE)));
+            articleInfo.setImageUrl((String) article.get(YystvConstant.IMAGE_URL));
             list.add(articleInfo);
         }
 
