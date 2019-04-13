@@ -4,6 +4,7 @@ import com.tc.reptile.dao.WebInfoDao;
 import com.tc.reptile.entity.WebInfoEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -32,5 +33,13 @@ public class WebInfoService {
 
     public void save(WebInfoEntity webInfoEntity) {
         webInfoDao.save(webInfoEntity);
+    }
+
+    /**
+     * 查询所有网站列表
+     * @return
+     */
+    public List<WebInfoEntity> findAll() {
+        return webInfoDao.findAll();
     }
 }

@@ -1,5 +1,6 @@
 package com.tc.reptile.dao;
 
+import com.tc.reptile.dao.jdbc.ArticleInfoJdbcDao;
 import com.tc.reptile.entity.ArticleInfoEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -11,7 +12,7 @@ import java.util.Optional;
  * @Description:
  * @Date: Create in 22:03 2019/3/29
  */
-public interface ArticleInfoDao extends JpaRepository<ArticleInfoEntity, Long> {
+public interface ArticleInfoDao extends JpaRepository<ArticleInfoEntity, Long>, ArticleInfoJdbcDao {
     Optional<ArticleInfoEntity> findByUrl(String url);
 
     List<ArticleInfoEntity> findAllByStatus(Integer status);
