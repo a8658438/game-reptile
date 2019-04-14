@@ -19,6 +19,7 @@ import com.tc.reptile.util.HttpUtil;
 import com.tc.reptile.util.RegexUtil;
 import com.vdurmont.emoji.EmojiParser;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,7 +92,7 @@ public class ReptileService {
             articleInfo.setTitle((String) article.get(YystvConstant.ARTICLE_TITLE));
             articleInfo.setUrl(articleUrl);
             articleInfo.setStatus(ArticleStatusEnum.NOT_YET.getStatus());
-            articleInfo.setType(YystvBordEnum.getName((Integer) article.get(YystvConstant.ARTICLE_TYPE)));
+            articleInfo.setType(YystvBordEnum.getName(Integer.parseInt((String) article.get(YystvConstant.ARTICLE_TYPE))));
             articleInfo.setImageUrl((String) article.get(YystvConstant.IMAGE_URL));
             list.add(articleInfo);
         }
@@ -133,7 +134,10 @@ public class ReptileService {
      */
     @Transactional
     public void saveGameData(ArticleInfoEntity articleInfoEntity, Document document) {
-        String html = document.html();
+        String html = document.getElementsByClass(YystvConstant.ARTICLE_CONTENT).get(0).html();
+        System.out.println(html);
+        Element element = document.getElementsByClass(YystvConstant.ARTICLE_CONTENT).get(0);
+
         // 保存文章提到的游戏
         List<GameAppearRecordEntity> recordList = new ArrayList<>();
         RegexUtil.getGames(html).forEach(game -> {

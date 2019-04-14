@@ -37,7 +37,7 @@ public class ArticleInfoJdbcDaoImpl extends JdbcDaoSupport implements ArticleInf
 
         sql.append("  where t.status = 1");
         List<Object> params = new ArrayList<>();
-        if (param.getSourceId() != null) {
+        if (param.getSourceId() != null || param.getSourceId() == 0) {
             sql.append(" and t.source_id = ?");
             params.add(param.getSourceId());
         }

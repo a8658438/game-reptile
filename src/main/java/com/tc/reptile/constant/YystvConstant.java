@@ -13,6 +13,7 @@ public class YystvConstant {
     public static final String HOT_CLASS = "doc-agrees-count";
     public static final String ARTICLE_TYPE = "board";
     public static final String IMAGE_URL = "cover";
+    public static final String ARTICLE_CONTENT = "doc-content";
 //    public static final String ARTICLE_;
 //    public static final String ARTICLE_;
 //    public static final String ARTICLE_;
