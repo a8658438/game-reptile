@@ -1,7 +1,7 @@
 package com.tc.reptile.dao.jdbc.impl;
 
 import com.tc.reptile.dao.jdbc.ArticleInfoJdbcDao;
-import com.tc.reptile.entity.ArticleInfoEntity;
+import com.tc.reptile.model.ArticleInfoDTO;
 import com.tc.reptile.model.ArticleParam;
 import com.tc.reptile.model.PageDTO;
 import com.tc.reptile.model.PageParam;
@@ -29,7 +29,7 @@ public class ArticleInfoJdbcDaoImpl extends JdbcDaoSupport implements ArticleInf
         setDataSource(dataSource);
     }
 
-    public PageDTO<ArticleInfoEntity> pageArticleList(ArticleParam param, PageParam page) {
+    public PageDTO<ArticleInfoDTO> pageArticleList(ArticleParam param, PageParam page) {
         StringBuilder sql = new StringBuilder(" from article_info t");
         if (!StringUtils.isEmpty(param.getContent())) {
             sql.append(" left join article_content c on t.id = c.article_id ");
@@ -37,7 +37,7 @@ public class ArticleInfoJdbcDaoImpl extends JdbcDaoSupport implements ArticleInf
 
         sql.append("  where t.status = 1");
         List<Object> params = new ArrayList<>();
-        if (param.getSourceId() != null || param.getSourceId() == 0) {
+        if (param.getSourceId() != null && param.getSourceId() != 0) {
             sql.append(" and t.source_id = ?");
             params.add(param.getSourceId());
         }
@@ -57,18 +57,22 @@ public class ArticleInfoJdbcDaoImpl extends JdbcDaoSupport implements ArticleInf
             sql.append(" and c.content like concat('%',?,'%')");
             params.add(param.getContent());
         }
+        if (!StringUtils.isEmpty(param.getType())) {
+            sql.append(" and t.type like concat('%',?,'%')");
+            params.add(param.getType());
+        }
 
         String countSql = "select count(1) " + sql;
         logger.info("count with SQL: {},param:{}", countSql, params.toArray());
         Long total = getJdbcTemplate().queryForObject(countSql, params.toArray(), Long.class);
 
         sql.append(" order by t.release_time desc limit ?,?");
-        params.add(page.getPage() - 1);
+        params.add((page.getPage() - 1) * page.getPageSize());
         params.add(page.getPageSize());
 
         String querySql = "select t.* " + sql;
         logger.info(" data with SQL: {},param:{}", querySql, params.toArray());
-        List<ArticleInfoEntity> result = getJdbcTemplate().query(querySql, params.toArray(), new BeanPropertyRowMapper<>(ArticleInfoEntity.class));
+        List<ArticleInfoDTO> result = getJdbcTemplate().query(querySql, params.toArray(), new BeanPropertyRowMapper<>(ArticleInfoDTO.class));
         return PageDTO.of(total, result);
     }
 }

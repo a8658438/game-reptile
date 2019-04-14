@@ -51,6 +51,11 @@ public class HttpUtil {
     */
     public static Document getDocument(String url, String baseUrl) throws IOException {
         Document document = Jsoup.connect(url).get();
+        Elements imgs = document.getElementsByTag("img");
+        imgs.forEach(element -> {
+            String href = element.attr("data-original");
+            element.attr("src", href);
+        });
         Elements links = document.getElementsByTag("link");
         links.forEach(element -> {
             String href = element.attr("href");

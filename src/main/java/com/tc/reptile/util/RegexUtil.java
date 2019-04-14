@@ -26,7 +26,7 @@ public class RegexUtil {
         Set<String> set = new HashSet<>();
         while (matcher.find()) {
             String book = matcher.group(1);
-            set.add(book.replace(" ", ""));
+            set.add(HtmlUtil.delHtmlTag(book).replace(" ", ""));
         }
         return set;
     }

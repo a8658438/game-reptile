@@ -51,6 +51,11 @@ public class ArticleInfoEntity implements Serializable {
    	@Column(name = "image_url" )
 	private String imageUrl;
    	/**
+	 * 文章内容缩略
+	 */
+   	@Column(name = "content_breviary" )
+	private String contentBreviary;
+   	/**
 	 * 文章分类
 	 */
    	@Column(name = "type" )
@@ -86,6 +91,14 @@ public class ArticleInfoEntity implements Serializable {
    	@Column(name = "create_time" )
 	private Integer createTime;
 
+
+	public String getContentBreviary() {
+		return contentBreviary;
+	}
+
+	public void setContentBreviary(String contentBreviary) {
+		this.contentBreviary = contentBreviary;
+	}
 
 	public static long getSerialVersionUID() {
 		return serialVersionUID;

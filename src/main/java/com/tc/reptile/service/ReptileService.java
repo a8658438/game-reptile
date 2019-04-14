@@ -15,6 +15,7 @@ import com.tc.reptile.entity.ArticleInfoEntity;
 import com.tc.reptile.entity.GameAppearRecordEntity;
 import com.tc.reptile.entity.WebInfoEntity;
 import com.tc.reptile.util.DateUtil;
+import com.tc.reptile.util.HtmlUtil;
 import com.tc.reptile.util.HttpUtil;
 import com.tc.reptile.util.RegexUtil;
 import com.vdurmont.emoji.EmojiParser;
@@ -112,6 +113,7 @@ public class ReptileService {
         // 查询文章列表
         List<ArticleInfoEntity> articleList = articleInfoDao.findAllByStatus(ArticleStatusEnum.NOT_YET.getStatus());
         for (ArticleInfoEntity article : articleList) {
+            logger.info("爬去文章内容，文章ID：{}", article.getId());
             try {
                 saveGameData(article, HttpUtil.getDocument(article.getUrl(), "http://www.yystv.cn/"));
 
@@ -134,10 +136,7 @@ public class ReptileService {
      */
     @Transactional
     public void saveGameData(ArticleInfoEntity articleInfoEntity, Document document) {
-        String html = document.getElementsByClass(YystvConstant.ARTICLE_CONTENT).get(0).html();
-        System.out.println(html);
-        Element element = document.getElementsByClass(YystvConstant.ARTICLE_CONTENT).get(0);
-
+        String html = document.getElementsByClass(YystvConstant.ARTICLE_CONTENT).get(0).child(0).html();
         // 保存文章提到的游戏
         List<GameAppearRecordEntity> recordList = new ArrayList<>();
         RegexUtil.getGames(html).forEach(game -> {
@@ -161,6 +160,7 @@ public class ReptileService {
             String count = tags.get(0).html();
             articleInfoEntity.setHot(StringUtils.isEmpty(count) ? 0 : Integer.parseInt(count));
         }
+        articleInfoEntity.setContentBreviary(HtmlUtil.getBreviary(html));
         articleInfoEntity.setStatus(ArticleStatusEnum.ALREADY.getStatus());
         articleInfoDao.save(articleInfoEntity);
     }

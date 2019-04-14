@@ -1,5 +1,6 @@
 package com.tc.reptile.controller;
 
+import com.tc.reptile.entity.ArticleContentEntity;
 import com.tc.reptile.entity.ArticleInfoEntity;
 import com.tc.reptile.model.ArticleParam;
 import com.tc.reptile.model.PageDTO;
@@ -9,6 +10,8 @@ import com.tc.reptile.service.ArticleInfoService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Optional;
 
 /**
  * @Author: Chensr
@@ -26,12 +29,13 @@ public class ArticleInfoController {
 
     @PostMapping("page")
     public ResultVO pageArticleList(ArticleParam param, PageParam page) {
-        PageDTO<ArticleInfoEntity> data = service.pageArticleList(param, page);
-        return ResultVO.of(data);
+        return ResultVO.of(service.pageArticleList(param, page));
     }
 
     @PostMapping("/content")
-    public ResultVO getContent(Long articleId){
-        return ResultVO.of(service.getContentByArticleId(articleId).get());
+    public ResultVO getContent(Long articleId) {
+        Optional<ArticleContentEntity> optional = service.getContentByArticleId(articleId);
+        return ResultVO.of(optional.isPresent() ? optional.get() : null);
     }
+
 }

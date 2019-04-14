@@ -16,4 +16,5 @@ public interface ArticleInfoDao extends JpaRepository<ArticleInfoEntity, Long>, 
     Optional<ArticleInfoEntity> findByUrl(String url);
 
     List<ArticleInfoEntity> findAllByStatus(Integer status);
+    List<ArticleInfoEntity> findAllByStatusAndSourceIdOrderByHotDesc(Integer status, Long sourceId);
 }

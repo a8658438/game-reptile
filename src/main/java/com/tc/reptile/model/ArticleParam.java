@@ -26,6 +26,10 @@ public class ArticleParam {
      * 文章内容
      */
     private String content;
+    /**
+     * 文章分类
+     */
+    private String type;
 
     public Integer getSourceId() {
         return sourceId;
@@ -65,5 +69,13 @@ public class ArticleParam {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }
