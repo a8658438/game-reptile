@@ -40,7 +40,7 @@ public class ArticleInfoService {
             list.forEach(record -> {
                 games.append("、" + record.getGameName());
             });
-            article.setIncludeGames(games.substring(1));
+            article.setIncludeGames(games.length() > 1 ? games.substring(1) : "");
         });
         return articlePage;
     }
