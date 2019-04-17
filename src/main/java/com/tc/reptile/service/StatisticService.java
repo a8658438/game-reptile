@@ -34,4 +34,16 @@ public class StatisticService {
         });
         return list;
     }
+
+
+    /***
+     * @Author: Chensr
+     * @Description: 游戏变化排行
+     * @Date: 2019/4/17 21:15
+     * @param
+     * @return: java.lang.Object
+    */
+    public Object changeRank() {
+        return null;
+    }
 }

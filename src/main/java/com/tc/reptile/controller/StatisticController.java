@@ -19,4 +19,9 @@ public class StatisticController {
     public ResultVO currentHotRank() {
         return ResultVO.of(service.currentHotRank());
     }
+
+    @PostMapping("changeRank")
+    public ResultVO changeRank() {
+        return ResultVO.of(service.changeRank());
+    }
 }
