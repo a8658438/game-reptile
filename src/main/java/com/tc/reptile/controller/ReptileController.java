@@ -19,7 +19,7 @@ import java.util.Optional;
  * @Date: Create in 20:51 2019/3/28
  */
 @RestController
-@RequestMapping("/reptile")
+@RequestMapping("/api/reptile")
 public class ReptileController {
     private Logger logger = LoggerFactory.getLogger(ReptileController.class);
 

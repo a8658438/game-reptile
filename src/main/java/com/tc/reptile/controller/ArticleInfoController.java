@@ -19,7 +19,7 @@ import java.util.Optional;
  * @Date: Create in 19:06 2019/4/13
  */
 @RestController
-@RequestMapping("/article")
+@RequestMapping("/api/article")
 public class ArticleInfoController {
     private final ArticleInfoService service;
 

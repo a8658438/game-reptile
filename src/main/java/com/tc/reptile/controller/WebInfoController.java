@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @Date: Create in 19:19 2019/4/13
  */
 @RestController
-@RequestMapping("/web")
+@RequestMapping("/api/web")
 public class WebInfoController {
     private final WebInfoService webInfoService;
 

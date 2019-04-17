@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("statistic")
+@RequestMapping("/api/statistic")
 public class StatisticController {
     private final StatisticService service;
 
@@ -23,5 +23,10 @@ public class StatisticController {
     @PostMapping("changeRank")
     public ResultVO changeRank() {
         return ResultVO.of(service.changeRank());
+    }
+
+    @PostMapping("gameCount")
+    public ResultVO gameCount() {
+        return ResultVO.of(service.gameCount());
     }
 }
