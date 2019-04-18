@@ -26,7 +26,7 @@ public class WebInfoService {
      * @Date: 2019/4/13 15:01
      * @param id
      * @return: java.util.Optional<com.tc.reptile.entity.WebInfoEntity>
-    */
+     */
     public Optional<WebInfoEntity> findById(Long id) {
         return webInfoDao.findById(id);
     }
@@ -37,9 +37,23 @@ public class WebInfoService {
 
     /**
      * 查询所有网站列表
+     *
      * @return
      */
     public List<WebInfoEntity> findAll() {
         return webInfoDao.findAll();
+    }
+
+    /***
+     * @Author: Chensr
+     * @Description: 清零已爬取次数
+     * @Date: 2019/4/18 19:26
+     * @param
+     * @return: void
+     */
+    public void resetReptileCount() {
+        List<WebInfoEntity> list = webInfoDao.findAll();
+        list.forEach(web -> web.setReptileCount(0));
+        webInfoDao.saveAll(list);
     }
 }

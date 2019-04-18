@@ -40,6 +40,13 @@ public class WebInfoEntity implements Serializable {
 
    	@Column(name = "article_url")
 	private String articleUrl;
+	/**
+	 * 当天已爬取数量
+	 */
+	@Column(name = "reptile_count")
+	private Integer reptileCount;
+
+
 
 	public static long getSerialVersionUID() {
 		return serialVersionUID;
@@ -83,5 +90,13 @@ public class WebInfoEntity implements Serializable {
 
 	public void setWebName(String webName) {
 		this.webName = webName;
+	}
+
+	public Integer getReptileCount() {
+		return reptileCount;
+	}
+
+	public void setReptileCount(Integer reptileCount) {
+		this.reptileCount = reptileCount;
 	}
 }
