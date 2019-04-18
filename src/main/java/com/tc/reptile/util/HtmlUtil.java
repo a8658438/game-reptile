@@ -56,6 +56,7 @@ public class HtmlUtil {
         if (StringUtils.isEmpty(html)) {
             return null;
         }
-        return delHtmlTag(html).substring(0, 100);
+        html = delHtmlTag(html);
+        return html.substring(0, html.length() > 100 ? 100 : html.length());
     }
 }

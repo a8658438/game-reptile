@@ -36,34 +36,8 @@ public class ReptileController {
     }
 
     @RequestMapping("/start")
-    public ResultVO startReptile(@RequestParam(value = "sourceIds" ,required = false) Integer[] sourceIds) {
-        System.out.println(sourceIds);
-
-//        Optional<WebInfoEntity> optional = webInfoService.findById(1L);
-//        Map<String, Object> param = new HashMap<>();
-//        optional.ifPresent(webInfoEntity -> {
-//            for (int i = 0; i < 999; i++) {
-//
-//                logger.info("开始爬取网站:{},当前爬取页数:{}", webInfoEntity.getWebName(), i);
-//                param.put("page", i);
-//                boolean b = reptileService.reptileArticleList(webInfoEntity, param);
-//
-//                // 达到了停止爬取条件
-//                if (!b) {
-//                    webInfoEntity.setLastTime(DateUtil.getCurrentSecond());
-//                    webInfoService.save(webInfoEntity);
-//
-//                    // 爬取文章内容
-//                    reptileService.reptileArticleContent();
-//                    break;
-//                }
-//                try {
-//                    Thread.sleep(2000);
-//                } catch (InterruptedException e) {
-//                    logger.error(e.getMessage(), e);
-//                }
-//            }
-//        });
+    public ResultVO startReptile(@RequestParam(value = "sourceIds[]" ,required = false) Integer[] sourceIds) {
+        reptileService.startReptile(sourceIds);
         return ResultVO.ok();
     }
 }

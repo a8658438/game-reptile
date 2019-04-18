@@ -43,6 +43,10 @@ public class WebInfoService {
         return webInfoDao.findAll();
     }
 
+    public List<WebInfoEntity> findAllByIdIn(Integer[] ids) {
+        return webInfoDao.findAllByIdIn(ids);
+    }
+
     /***
      * @Author: Chensr
      * @Description: 清零已爬取次数
