@@ -15,7 +15,6 @@ import java.util.Optional;
 @Service
 public class WebInfoService {
     private final WebInfoDao webInfoDao;
-
     public WebInfoService(WebInfoDao webInfoDao) {
         this.webInfoDao = webInfoDao;
     }

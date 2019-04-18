@@ -29,7 +29,7 @@ public class GameAppearRecordJdbcDaoImpl extends JdbcDaoSupport implements GameA
 
     @Override
     public List<GameCountDTO> gameCount() {
-        String sql = "select t.game_name, count(1) as total from game_appear_record t GROUP BY t.game_name";
+        String sql = "select t.game_name, count(1) as total from game_appear_record t GROUP BY t.game_name order by total desc limit 20";
         logger.info(" data with SQL: {},param:{},{}", sql);
         return  getJdbcTemplate().query(sql, new Object[]{}, new BeanPropertyRowMapper<>(GameCountDTO.class));
     }
