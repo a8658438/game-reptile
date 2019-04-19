@@ -10,6 +10,7 @@ logging:
   path: logs
 
 reptile:
-  read-time: 2019-03-01
+  read-time: 2019-04-17
   account: 314713228@qq.com
   password: a123456
+  count-limit: 3

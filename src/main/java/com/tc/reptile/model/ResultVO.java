@@ -18,10 +18,21 @@ public class ResultVO implements Serializable {
         return ResultVO.of(null);
     }
 
+    public static ResultVO ok(String message) {
+        return ResultVO.of(null, message);
+    }
+
     public static ResultVO of(Object data) {
         ResultVO vo = new ResultVO();
         vo.setCode(ApiCode.SUCCESS);
         vo.setMessage("");
+        vo.setData(data);
+        return vo;
+    }
+    public static ResultVO of(Object data, String message) {
+        ResultVO vo = new ResultVO();
+        vo.setCode(ApiCode.SUCCESS);
+        vo.setMessage(message);
         vo.setData(data);
         return vo;
     }
@@ -32,7 +43,12 @@ public class ResultVO implements Serializable {
         vo.setMessage(message);
         return vo;
     }
-
+    public static ResultVO fail(String message) {
+        ResultVO vo = new ResultVO();
+        vo.setCode(ApiCode.BAD_REQUEST);
+        vo.setMessage(message);
+        return vo;
+    }
     public String getCode() {
         return code;
     }

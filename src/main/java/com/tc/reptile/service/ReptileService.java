@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.tc.reptile.config.ReptileProperties;
 import com.tc.reptile.constant.ArticleStatusEnum;
-import com.tc.reptile.constant.YystvBordEnum;
 import com.tc.reptile.constant.YystvConstant;
 import com.tc.reptile.dao.*;
 import com.tc.reptile.entity.*;
@@ -16,6 +15,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -152,7 +152,7 @@ public class ReptileService {
             String count = tags.get(0).html();
             articleInfoEntity.setHot(StringUtils.isEmpty(count) ? 0 : Integer.parseInt(count));
         }
-        String type = document.getElementsByClass(YystvConstant.ARTICLE_TYPE).get(0).val();
+        String type = document.getElementsByClass(YystvConstant.ARTICLE_TYPE).get(0).text();
 
         articleInfoEntity.setType(type);
         articleInfoEntity.setContentBreviary(HtmlUtil.getBreviary(html));
@@ -176,51 +176,51 @@ public class ReptileService {
 
     /**
      * 开始数据爬取工作
-     * @param sourceIds
+     * @param size
+     * @return
      */
-    @Transactional
-    public void startReptile(Integer[] sourceIds) {
-        // 查询需要爬取的网站信息
-        List<WebInfoEntity> webList = sourceIds == null ? webInfoDao.findAll() : webInfoDao.findAllByIdIn(sourceIds);
-
+    public Integer saveReptileRecord(Integer size) {
         // 生成爬取记录
         Integer currentSecond = DateUtil.getCurrentSecond();
         ReptileRecordEntity record = new ReptileRecordEntity();
         record.setId(currentSecond);
-        record.setReptileCount(webList.size());
+        record.setReptileCount(size);
         record.setFinishCount(0);
         record.setReptileTime(currentSecond);
         reptileRecordDao.save(record);
+        return currentSecond;
+    }
 
-        webList.parallelStream().forEach(webInfoEntity -> {
-            Map<String, Object> param = new HashMap<>();
-            for (int i = 0; i < 999; i++) {
+    @Async
+    @Transactional
+    public void asyncReptileWeb(Integer currentSecond, WebInfoEntity webInfoEntity) {
+        Map<String, Object> param = new HashMap<>();
+        for (int i = 0; i < 999; i++) {
 
-                logger.info("开始爬取网站:{},当前爬取页数:{}", webInfoEntity.getWebName(), i);
-                param.put("page", i);
-                boolean b = this.reptileArticleList(webInfoEntity, param);
+            logger.info("开始爬取网站:{},当前爬取页数:{}", webInfoEntity.getWebName(), i);
+            param.put("page", i);
+            boolean b = this.reptileArticleList(webInfoEntity, param);
 
-                // 达到了停止爬取条件
-                if (!b) {
-                    // 爬取文章内容
-                    this.reptileArticleContent();
+            // 达到了停止爬取条件
+            if (!b) {
+                // 爬取文章内容
+                this.reptileArticleContent();
 
-                    // 更新网站信息
-                    webInfoEntity.setLastTime(DateUtil.getCurrentSecond());
-                    webInfoEntity.setReptileCount(webInfoEntity.getReptileCount() + 1);
-                    webInfoDao.save(webInfoEntity);
+                // 更新网站信息
+                webInfoEntity.setLastTime(DateUtil.getCurrentSecond());
+                webInfoEntity.setReptileCount(webInfoEntity.getReptileCount() + 1);
+                webInfoDao.save(webInfoEntity);
 
-                    // 更新爬取记录信息
-                    reptileRecordDao.updateRecord(DateUtil.getCurrentSecond(),currentSecond);
-                    break;
-                }
-                try {
-                    Thread.sleep(2000);
-                } catch (InterruptedException e) {
-                    logger.error(e.getMessage(), e);
-                }
+                // 更新爬取记录信息
+                reptileRecordDao.updateRecord(DateUtil.getCurrentSecond(),currentSecond);
+                break;
             }
-        });
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                logger.error(e.getMessage(), e);
+            }
+        }
     }
 
     public ReptileRecordEntity findReptileRecord() {

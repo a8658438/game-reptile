@@ -13,6 +13,7 @@ public class ReptileProperties {
     private String readTime;
     private String account;
     private String password;
+    private Integer countLimit; // 爬取次数限制
 
     public String getAccount() {
         return account;
@@ -36,5 +37,13 @@ public class ReptileProperties {
 
     public void setReadTime(String readTime) {
         this.readTime = readTime;
+    }
+
+    public Integer getCountLimit() {
+        return countLimit;
+    }
+
+    public void setCountLimit(Integer countLimit) {
+        this.countLimit = countLimit;
     }
 }
