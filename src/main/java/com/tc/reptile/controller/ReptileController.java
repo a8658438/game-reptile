@@ -40,4 +40,9 @@ public class ReptileController {
         reptileService.startReptile(sourceIds);
         return ResultVO.ok();
     }
+
+    @RequestMapping("/getReptileRecord")
+    public ResultVO getReptileRecord () {
+        return ResultVO.of(reptileService.findReptileRecord());
+    }
 }

@@ -220,4 +220,8 @@ public class ReptileService {
             }
         });
     }
+
+    public ReptileRecordEntity findReptileRecord() {
+        return reptileRecordDao.findFirstByOrderByReptileTimeDesc().orElse(null);
+    }
 }
