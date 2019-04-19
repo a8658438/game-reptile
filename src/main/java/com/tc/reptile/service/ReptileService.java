@@ -86,7 +86,6 @@ public class ReptileService {
             articleInfo.setTitle((String) article.get(YystvConstant.ARTICLE_TITLE));
             articleInfo.setUrl(articleUrl);
             articleInfo.setStatus(ArticleStatusEnum.NOT_YET.getStatus());
-            articleInfo.setType(YystvBordEnum.getName(Integer.parseInt((String) article.get(YystvConstant.ARTICLE_TYPE))));
             articleInfo.setImageUrl((String) article.get(YystvConstant.IMAGE_URL));
             list.add(articleInfo);
         }
@@ -153,6 +152,9 @@ public class ReptileService {
             String count = tags.get(0).html();
             articleInfoEntity.setHot(StringUtils.isEmpty(count) ? 0 : Integer.parseInt(count));
         }
+        String type = document.getElementsByClass(YystvConstant.ARTICLE_TYPE).get(0).val();
+
+        articleInfoEntity.setType(type);
         articleInfoEntity.setContentBreviary(HtmlUtil.getBreviary(html));
         articleInfoEntity.setStatus(ArticleStatusEnum.ALREADY.getStatus());
         articleInfoDao.save(articleInfoEntity);
