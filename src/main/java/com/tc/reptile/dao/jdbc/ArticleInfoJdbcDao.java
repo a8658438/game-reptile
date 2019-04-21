@@ -12,4 +12,6 @@ import com.tc.reptile.model.PageParam;
  */
 public interface ArticleInfoJdbcDao {
     PageDTO<ArticleInfoDTO> pageArticleList(ArticleParam param, PageParam page);
+
+    Integer countArticleByTimeRank(Integer startTime, Integer endTime);
 }

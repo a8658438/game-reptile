@@ -7,6 +7,7 @@ import org.joda.time.format.DateTimeFormatter;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -17,6 +18,25 @@ import java.util.regex.Pattern;
  */
 public class DateUtil {
     public static final String FORMAT_TYPE_1 = "yyyy-MM-dd";
+    public static final Integer DAY_Millis = 1000 * 60 * 60 * 24;
+
+    /**
+     * 获取某天最后一秒
+     *
+     * @return
+     */
+    public static Integer getDayEndSecond(DateTime time) {
+        return (int) (new DateTime(time.getYear(), time.getMonthOfYear(), time.getDayOfMonth(), 23, 59, 59).getMillis() / 1000);
+    }
+
+    /**
+     * 获取某天开始一秒
+     *
+     * @return
+     */
+    public static Integer getDayStartSecond(DateTime time) {
+        return (int) (new DateTime(time.getYear(), time.getMonthOfYear(), time.getDayOfMonth(), 0, 0).getMillis() / 1000);
+    }
 
     /***
      * @Author: Chensr
@@ -27,6 +47,15 @@ public class DateUtil {
      */
     public static Integer getCurrentSecond() {
         return (int) Instant.now().getEpochSecond();
+    }
+
+    /**
+     * 获取某个时间的秒数
+     * @param time
+     * @return
+     */
+    public static Integer getTimeSecond(DateTime time) {
+        return (int)(time.getMillis() / 1000);
     }
 
     /***

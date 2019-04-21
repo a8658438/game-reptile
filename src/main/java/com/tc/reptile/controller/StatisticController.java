@@ -29,4 +29,9 @@ public class StatisticController {
     public ResultVO gameCount() {
         return ResultVO.of(service.gameCount());
     }
+
+    @RequestMapping("/articleChangRank")
+    public ResultVO articleChangRank() {
+        return ResultVO.of(service.articleChangRank());
+    }
 }

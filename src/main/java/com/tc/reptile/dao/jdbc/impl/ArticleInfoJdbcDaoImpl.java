@@ -75,4 +75,11 @@ public class ArticleInfoJdbcDaoImpl extends JdbcDaoSupport implements ArticleInf
         List<ArticleInfoDTO> result = getJdbcTemplate().query(querySql, params.toArray(), new BeanPropertyRowMapper<>(ArticleInfoDTO.class));
         return PageDTO.of(total, result);
     }
+
+    @Override
+    public Integer countArticleByTimeRank(Integer startTime, Integer endTime) {
+        String sql = "select count(1) from article_info t where t.create_time between ? and ?";
+        logger.info(" data with SQL: {},param:{},{}", sql, startTime, endTime);
+        return getJdbcTemplate().queryForObject(sql, new Object[]{startTime, endTime}, Integer.class);
+    }
 }
