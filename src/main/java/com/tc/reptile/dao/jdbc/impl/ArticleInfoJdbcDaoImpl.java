@@ -5,6 +5,8 @@ import com.tc.reptile.model.ArticleInfoDTO;
 import com.tc.reptile.model.ArticleParam;
 import com.tc.reptile.model.PageDTO;
 import com.tc.reptile.model.PageParam;
+import com.tc.reptile.util.DateUtil;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,7 @@ import org.springframework.util.StringUtils;
 import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author: Chensr
@@ -81,5 +84,17 @@ public class ArticleInfoJdbcDaoImpl extends JdbcDaoSupport implements ArticleInf
         String sql = "select count(1) from article_info t where t.create_time between ? and ?";
         logger.info(" data with SQL: {},param:{},{}", sql, startTime, endTime);
         return getJdbcTemplate().queryForObject(sql, new Object[]{startTime, endTime}, Integer.class);
+    }
+
+    @Override
+    public List<Map<String, Object>> countArticleType(Long id) {
+        String sql = "select t.type,count(1) as typeCount from article_info t where t.create_time between ? and ? group by t.type";
+
+        DateTime dateTime = new DateTime();
+        Integer endTime = DateUtil.getDayEndSecond(dateTime);
+        Integer startTime = DateUtil.getDayStartSecond(dateTime.plusMonths(-3));
+
+        logger.info(" data with SQL: {},param:{},{}", sql, startTime, endTime);
+        return getJdbcTemplate().queryForList(sql, startTime, endTime);
     }
 }

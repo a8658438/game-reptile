@@ -170,4 +170,26 @@ public class StatisticService {
         return dto;
     }
 
+    /***
+     * @Author: Chensr
+     * @Description: 统计文章分类的文章数量
+     * @Date: 2019/4/22 20:54
+     * @param
+     * @return: java.lang.Object
+    */
+    public  List<ArticleTypeCountDTO> articleTypeCount() {
+        List<ArticleTypeCountDTO> list = new ArrayList<>();
+        // 获取网站数量
+        webInfoDao.findAll().forEach(web -> {
+            List<Map<String, Object>> typeList = articleInfoDao.countArticleType(web.getId());
+
+            ArticleTypeCountDTO dto = new ArticleTypeCountDTO();
+            dto.setId(web.getId());
+            dto.setWebName(web.getWebName());
+            dto.setTypeList(typeList);
+
+            list.add(dto);
+        });
+        return list;
+    }
 }
