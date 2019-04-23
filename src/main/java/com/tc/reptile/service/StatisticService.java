@@ -70,7 +70,9 @@ public class StatisticService {
 
             // 如果原本存在，计算游戏变化值,不存在则是首次提起
             if (lastCoutMap.containsKey(game.getGameName()) || game.getTotal() != 1) {
-                game.setChangeCount(lastCoutMap.containsKey(game.getGameName()) ? game.getTotal() - lastCoutMap.get(game.getGameName()) : game.getTotal());
+                Integer lastTotal = lastCoutMap.containsKey(game.getGameName()) ? lastCoutMap.get(game.getGameName()) : 0;
+                game.setChangeCount(game.getTotal() - lastTotal);
+                game.setChangePercent((game.getChangeCount() >= 0 ? "+" : "") + NumberUtil.getPercent(game.getChangeCount(), lastTotal));
                 countList.add(game);
             }
         });
@@ -79,7 +81,7 @@ public class StatisticService {
         lastList.forEach(game -> {
             if (!currentCoutMap.containsKey(game.getGameName()) && game.getTotal() != 1) {
                 game.setChangeCount(0 - game.getTotal());
-                game.setTotal(0);
+                game.setChangePercent(NumberUtil.getPercent(game.getChangeCount(), game.getTotal()));
                 countList.add(game);
             }
         });
