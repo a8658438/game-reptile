@@ -5,7 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
-import org.springframework.http.HttpHeaders;
+import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -34,9 +34,11 @@ public class HttpUtil {
             HttpHeaders headers = new HttpHeaders();
             headers.put(HttpHeaders.COOKIE, list);
 
-            String url = "https://cowlevel.net/following/element-data?per_page=10&page=1";
-            String forObject = restTemplate.getForObject(url, String.class);
-            System.out.println(forObject);
+            String url = "https://cowlevel.net/following/element-data";
+            Map<String, Object> map = new HashMap<>();
+            map.put("page", 1);
+            Optional<Object> forObject = getDataForJson(url, headers, map);
+            System.out.println((JSONObject)forObject.get());
         });
 
     }
@@ -57,6 +59,27 @@ public class HttpUtil {
         String response = restTemplate.getForObject(builder.build().encode().toUri(), String.class);
         Object data = getResponseData(response);
         return data == null ? Optional.empty() : Optional.of((JSONArray) data);
+
+    }
+
+    /***
+     * @Author: Chensr
+     * @Description: 调用链接获取数据，返回data数组
+     * @Date: 2019/3/30 14:45
+     * @param url
+     * @param param
+     * @return: java.util.Optional<com.alibaba.fastjson.JSONArray>
+     */
+    public static Optional<Object> getDataForJson(String url, HttpHeaders httpHeaders, Map<String, Object> param) {
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
+        param.forEach((k, v) -> {
+            builder.queryParam(k, v);
+        });
+
+        HttpEntity<MultiValueMap<String,String>> request = new HttpEntity<MultiValueMap<String,String>>(null,httpHeaders);
+        ResponseEntity<String> responseEntity = restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.GET, request, String.class);
+        Object data = getResponseData(responseEntity.getBody());
+        return data == null ? Optional.empty() : Optional.of(data);
 
     }
 
