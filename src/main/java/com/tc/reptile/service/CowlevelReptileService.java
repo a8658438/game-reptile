@@ -2,6 +2,7 @@ package com.tc.reptile.service;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.tc.reptile.config.CowlevelProperties;
 import com.tc.reptile.config.ReptileProperties;
 import com.tc.reptile.constant.ArticleStatusEnum;
 import com.tc.reptile.constant.CowlevelConstant;
@@ -38,14 +39,16 @@ public class CowlevelReptileService {
     private final WebInfoDao webInfoDao;
     private final ArticleInfoDao articleInfoDao;
     private final ReptileProperties properties;
+    private final CowlevelProperties cowlevelProperties;
     private final GameAppearRecordDao recordDao;
     private final ArticleContentDao contentDao;
     private final ReptileRecordDao reptileRecordDao;
 
-    public CowlevelReptileService(WebInfoDao webInfoDao, ArticleInfoDao articleInfoDao, ReptileProperties properties, GameAppearRecordDao recordDao, ArticleContentDao contentDao, ReptileRecordDao reptileRecordDao) {
+    public CowlevelReptileService(WebInfoDao webInfoDao, ArticleInfoDao articleInfoDao, ReptileProperties properties, CowlevelProperties cowlevelProperties, GameAppearRecordDao recordDao, ArticleContentDao contentDao, ReptileRecordDao reptileRecordDao) {
         this.webInfoDao = webInfoDao;
         this.articleInfoDao = articleInfoDao;
         this.properties = properties;
+        this.cowlevelProperties = cowlevelProperties;
         this.recordDao = recordDao;
         this.contentDao = contentDao;
         this.reptileRecordDao = reptileRecordDao;
@@ -59,11 +62,10 @@ public class CowlevelReptileService {
      * @return: java.lang.String
     */
     public String login() {
-        String loginUrl = "https://cowlevel.net/passport/login/submit";
         Map<String, String> requestEntity = new HashMap<>();
-        requestEntity.put(CowlevelConstant.ACCOUNT, properties.getAccount());
-        requestEntity.put(CowlevelConstant.PASSWORD, properties.getPassword());
-        Optional<JSONObject> jsonObject = HttpUtil.postDataForJson(loginUrl, requestEntity);
+        requestEntity.put(CowlevelConstant.ACCOUNT, cowlevelProperties.getAccount());
+        requestEntity.put(CowlevelConstant.PASSWORD, cowlevelProperties.getPassword());
+        Optional<JSONObject> jsonObject = HttpUtil.postDataForJson(cowlevelProperties.getLoginUrl(), requestEntity);
         return jsonObject.isPresent() ? (String) jsonObject.get().get(CowlevelConstant.TOKEN) : null;
     }
 

@@ -8,28 +8,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @Description:
  * @Date: Create in 11:41 2019/3/30
  */
-@ConfigurationProperties(prefix = "reptile")
+@ConfigurationProperties(prefix = "config.reptile")
 public class ReptileProperties {
     private String readTime;
-    private String account;
-    private String password;
     private Integer countLimit; // 爬取次数限制
-
-    public String getAccount() {
-        return account;
-    }
-
-    public void setAccount(String account) {
-        this.account = account;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 
     public Integer getReadTime() {
         return DateUtil.getDateSecond(readTime, DateUtil.FORMAT_TYPE_1);

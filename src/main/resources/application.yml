@@ -9,8 +9,12 @@ spring:
 logging:
   path: logs
 
-reptile:
-  read-time: 2019-04-17
-  account: 13428889873
-  password: Will87200407
-  count-limit: 3
+config:
+  reptile:
+    read-time: 2019-04-17
+    count-limit: 3
+
+  cowlevel:
+    account: 13428889873
+    password: Will87200407
+    login-url: https://cowlevel.net/passport/login/submit
