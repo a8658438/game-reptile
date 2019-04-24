@@ -4,9 +4,13 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.tc.reptile.config.ReptileProperties;
 import com.tc.reptile.constant.ArticleStatusEnum;
+import com.tc.reptile.constant.CowlevelConstant;
 import com.tc.reptile.constant.YystvConstant;
 import com.tc.reptile.dao.*;
-import com.tc.reptile.entity.*;
+import com.tc.reptile.entity.ArticleContentEntity;
+import com.tc.reptile.entity.ArticleInfoEntity;
+import com.tc.reptile.entity.GameAppearRecordEntity;
+import com.tc.reptile.entity.WebInfoEntity;
 import com.tc.reptile.util.DateUtil;
 import com.tc.reptile.util.HtmlUtil;
 import com.tc.reptile.util.HttpUtil;
@@ -25,11 +29,11 @@ import java.util.*;
 /**
  * @Author: Chensr
  * @Description:
- * @Date: Create in 20:54 2019/3/29
+ * @Date: Create in 17:35 2019/4/24
  */
 @Service
-public class ReptileService {
-    private Logger logger = LoggerFactory.getLogger(ReptileService.class);
+public class CowlevelReptileService {
+    private Logger logger = LoggerFactory.getLogger(CowlevelReptileService.class);
 
     private final WebInfoDao webInfoDao;
     private final ArticleInfoDao articleInfoDao;
@@ -38,13 +42,61 @@ public class ReptileService {
     private final ArticleContentDao contentDao;
     private final ReptileRecordDao reptileRecordDao;
 
-    public ReptileService(WebInfoDao webInfoDao, ArticleInfoDao articleInfoDao, ReptileProperties properties, GameAppearRecordDao recordDao, ArticleContentDao contentDao, ReptileRecordDao reptileRecordDao) {
+    public CowlevelReptileService(WebInfoDao webInfoDao, ArticleInfoDao articleInfoDao, ReptileProperties properties, GameAppearRecordDao recordDao, ArticleContentDao contentDao, ReptileRecordDao reptileRecordDao) {
         this.webInfoDao = webInfoDao;
         this.articleInfoDao = articleInfoDao;
         this.properties = properties;
         this.recordDao = recordDao;
         this.contentDao = contentDao;
         this.reptileRecordDao = reptileRecordDao;
+    }
+
+    /***
+     * @Author: Chensr
+     * @Description: 登录方法，返回token
+     * @Date: 2019/4/24 18:04
+     * @param
+     * @return: java.lang.String
+    */
+    public String login() {
+        String loginUrl = "https://cowlevel.net/passport/login/submit";
+        Map<String, String> requestEntity = new HashMap<>();
+        requestEntity.put(CowlevelConstant.ACCOUNT, properties.getAccount());
+        requestEntity.put(CowlevelConstant.PASSWORD, properties.getPassword());
+        Optional<JSONObject> jsonObject = HttpUtil.postDataForJson(loginUrl, requestEntity);
+        return jsonObject.isPresent() ? (String) jsonObject.get().get(CowlevelConstant.TOKEN) : null;
+    }
+
+    @Async
+    @Transactional
+    public void asyncReptileWeb(Integer currentSecond, WebInfoEntity webInfoEntity) {
+        Map<String, Object> param = new HashMap<>();
+        for (int i = 0; i < 999; i++) {
+
+            logger.info("开始爬取网站:{},当前爬取页数:{}", webInfoEntity.getWebName(), i);
+            param.put("page", i);
+            boolean b = reptileArticleList(webInfoEntity, param);
+
+            // 达到了停止爬取条件
+            if (b) {
+                // 爬取文章内容
+                reptileArticleContent();
+
+                // 更新网站信息
+                webInfoEntity.setLastTime(DateUtil.getCurrentSecond());
+                webInfoEntity.setReptileCount(webInfoEntity.getReptileCount() + 1);
+                webInfoDao.save(webInfoEntity);
+
+                // 更新爬取记录信息
+                reptileRecordDao.updateRecord(DateUtil.getCurrentSecond(),currentSecond);
+                break;
+            }
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                logger.error(e.getMessage(), e);
+            }
+        }
     }
 
     /***
@@ -175,56 +227,4 @@ public class ReptileService {
         return infoEntity.isPresent() || (reptileLastTime != null && releaseTime < reptileLastTime) || releaseTime < properties.getReadTime();
     }
 
-    /**
-     * 开始数据爬取工作
-     * @param size
-     * @return
-     */
-    public Integer saveReptileRecord(Integer size) {
-        // 生成爬取记录
-        Integer currentSecond = DateUtil.getCurrentSecond();
-        ReptileRecordEntity record = new ReptileRecordEntity();
-        record.setId(currentSecond);
-        record.setReptileCount(size);
-        record.setFinishCount(0);
-        record.setReptileTime(currentSecond);
-        reptileRecordDao.save(record);
-        return currentSecond;
-    }
-
-    @Async
-    @Transactional
-    public void asyncReptileWeb(Integer currentSecond, WebInfoEntity webInfoEntity) {
-        Map<String, Object> param = new HashMap<>();
-        for (int i = 0; i < 999; i++) {
-
-            logger.info("开始爬取网站:{},当前爬取页数:{}", webInfoEntity.getWebName(), i);
-            param.put("page", i);
-            boolean b = reptileArticleList(webInfoEntity, param);
-
-            // 达到了停止爬取条件
-            if (b) {
-                // 爬取文章内容
-                this.reptileArticleContent();
-
-                // 更新网站信息
-                webInfoEntity.setLastTime(DateUtil.getCurrentSecond());
-                webInfoEntity.setReptileCount(webInfoEntity.getReptileCount() + 1);
-                webInfoDao.save(webInfoEntity);
-
-                // 更新爬取记录信息
-                reptileRecordDao.updateRecord(DateUtil.getCurrentSecond(),currentSecond);
-                break;
-            }
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                logger.error(e.getMessage(), e);
-            }
-        }
-    }
-
-    public ReptileRecordEntity findReptileRecord() {
-        return reptileRecordDao.findFirstByOrderByReptileTimeDesc().orElse(null);
-    }
 }

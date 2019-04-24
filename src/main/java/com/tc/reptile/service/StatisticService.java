@@ -72,7 +72,7 @@ public class StatisticService {
             if (lastCoutMap.containsKey(game.getGameName()) || game.getTotal() != 1) {
                 Integer lastTotal = lastCoutMap.containsKey(game.getGameName()) ? lastCoutMap.get(game.getGameName()) : 0;
                 game.setChangeCount(game.getTotal() - lastTotal);
-                game.setChangePercent((game.getChangeCount() >= 0 ? "+" : "") + NumberUtil.getPercent(game.getChangeCount(), lastTotal));
+                game.setChangePercent((game.getChangeCount() > 0 ? "+" : "") + NumberUtil.getPercent(game.getChangeCount(), lastTotal));
                 countList.add(game);
             }
         });
