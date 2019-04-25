@@ -20,7 +20,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.Async;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -35,6 +35,7 @@ import java.util.*;
 @Service
 public class CowlevelReptileService {
     private Logger logger = LoggerFactory.getLogger(CowlevelReptileService.class);
+    private String token;
 
     private final WebInfoDao webInfoDao;
     private final ArticleInfoDao articleInfoDao;
@@ -69,36 +70,95 @@ public class CowlevelReptileService {
         return jsonObject.isPresent() ? (String) jsonObject.get().get(CowlevelConstant.TOKEN) : null;
     }
 
-    @Async
+    /**
+     * 构建请求header带上cookie
+     * @return
+     */
+    private HttpHeaders buildHttpHeader() {
+        List<String> list = new ArrayList<>();
+        list.add(CowlevelConstant.TOKEN + "=" + token);
+        HttpHeaders headers = new HttpHeaders();
+        headers.put(HttpHeaders.COOKIE, list);
+        return headers;
+    }
+
+//    @Async
     @Transactional
     public void asyncReptileWeb(Integer currentSecond, WebInfoEntity webInfoEntity) {
+        // 校验是否登录成功
+        token = login();
+        if (StringUtils.isEmpty(token)) {
+            return;
+        }
+
+        // 获取网站分类
+        List<JSONObject> typeList = getArticleTypeList();
+        typeList.forEach(type ->{
+            System.out.println("ID:"+type.get("id")+",NAME:"+type.get("name"));
+
+            Map<String, Object> param = new HashMap<>();
+            for (int i = 0; i < 999; i++) {
+
+                logger.info("开始爬取网站:{},当前爬取页数:{}", webInfoEntity.getWebName(), i);
+                param.put("page", i);
+                param.put("is_rich_content", 1);
+                param.put("per_page", 50); // 每页数量
+                param.put("sort_type", "desc");
+                param.put("tag_id", type.get("id"));
+                boolean b = reptileArticleList(webInfoEntity, param);
+
+                // 达到了停止爬取条件
+                if (b) {
+                    // 爬取文章内容
+                    reptileArticleContent();
+
+                    // 更新网站信息
+                    webInfoEntity.setLastTime(DateUtil.getCurrentSecond());
+                    webInfoEntity.setReptileCount(webInfoEntity.getReptileCount() + 1);
+                    webInfoDao.save(webInfoEntity);
+
+                    // 更新爬取记录信息
+                    reptileRecordDao.updateRecord(DateUtil.getCurrentSecond(),currentSecond);
+                    break;
+                }
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    logger.error(e.getMessage(), e);
+                }
+            }
+        });
+
+
+    }
+
+    /***
+     * @Author: Chensr
+     * @Description: 获取分类列表
+     * @Date: 2019/4/25 20:35
+     * @param
+     * @return: java.util.List<com.alibaba.fastjson.JSONObject>
+    */
+    private List<JSONObject> getArticleTypeList() {
         Map<String, Object> param = new HashMap<>();
-        for (int i = 0; i < 999; i++) {
-
-            logger.info("开始爬取网站:{},当前爬取页数:{}", webInfoEntity.getWebName(), i);
+        List<JSONObject> list = new ArrayList<>();
+        for (int i = 1; i < 10; i++) {
             param.put("page", i);
-            boolean b = reptileArticleList(webInfoEntity, param);
+            Optional<Object> data = HttpUtil.getDataForJson(cowlevelProperties.getTypeUrl(), buildHttpHeader(), param);
 
-            // 达到了停止爬取条件
-            if (b) {
-                // 爬取文章内容
-                reptileArticleContent();
-
-                // 更新网站信息
-                webInfoEntity.setLastTime(DateUtil.getCurrentSecond());
-                webInfoEntity.setReptileCount(webInfoEntity.getReptileCount() + 1);
-                webInfoDao.save(webInfoEntity);
-
-                // 更新爬取记录信息
-                reptileRecordDao.updateRecord(DateUtil.getCurrentSecond(),currentSecond);
+            if (!data.isPresent()) {
                 break;
             }
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                logger.error(e.getMessage(), e);
+            JSONObject json = (JSONObject) data.get();
+            List typeList = (List) json.get("list");
+            list.addAll(typeList);
+
+            if ((int) json.get("has_more") == 0) {
+                break;
             }
+
         }
+        return list;
     }
 
     /***
@@ -112,11 +172,11 @@ public class CowlevelReptileService {
     public boolean reptileArticleList(WebInfoEntity webInfoEntity, Map<String, Object> param) {
         List<ArticleInfoEntity> list = new ArrayList<>();
         // 查询数据
-        Optional<JSONArray> data = HttpUtil.getDataForJson(webInfoEntity.getUrl(), param);
+        Optional<Object> data = HttpUtil.getDataForJson(webInfoEntity.getUrl(), buildHttpHeader(), param);
         if (!data.isPresent()) {
             return false;
         }
-        JSONArray array = data.get();
+        List array = (List) ((JSONObject) data.get()).get("list");
 
         int count = 0; //计数器统计是否达到停止爬取条件。因为有的不同分类有相同文章
         for (Object o : array) {

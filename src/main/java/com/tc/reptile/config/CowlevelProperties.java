@@ -12,6 +12,16 @@ public class CowlevelProperties {
     private String account;
     private String password;
     private String loginUrl;
+    private String typeUrl;
+
+
+    public String getTypeUrl() {
+        return typeUrl;
+    }
+
+    public void setTypeUrl(String typeUrl) {
+        this.typeUrl = typeUrl;
+    }
 
     public String getLoginUrl() {
         return loginUrl;

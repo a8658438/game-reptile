@@ -18,3 +18,4 @@ config:
     account: 13428889873
     password: Will87200407
     login-url: https://cowlevel.net/passport/login/submit
+    type-url: https://cowlevel.net/following/element-data

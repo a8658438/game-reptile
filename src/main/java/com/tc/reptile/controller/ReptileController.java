@@ -1,9 +1,9 @@
 package com.tc.reptile.controller;
 
 import com.tc.reptile.config.ReptileProperties;
-import com.tc.reptile.constant.ApiCode;
 import com.tc.reptile.entity.WebInfoEntity;
 import com.tc.reptile.model.ResultVO;
+import com.tc.reptile.service.CowlevelReptileService;
 import com.tc.reptile.service.ReptileService;
 import com.tc.reptile.service.WebInfoService;
 import org.slf4j.Logger;
@@ -29,11 +29,13 @@ public class ReptileController {
     private final ReptileService reptileService;
     private final WebInfoService webInfoService;
     private final ReptileProperties properties;
+    private final CowlevelReptileService cowlevelReptileService;
 
-    public ReptileController(ReptileService reptileService, WebInfoService webInfoService, ReptileProperties properties) {
+    public ReptileController(ReptileService reptileService, WebInfoService webInfoService, ReptileProperties properties, CowlevelReptileService cowlevelReptileService) {
         this.reptileService = reptileService;
         this.webInfoService = webInfoService;
         this.properties = properties;
+        this.cowlevelReptileService = cowlevelReptileService;
     }
 
     @RequestMapping("/start")
@@ -69,6 +71,12 @@ public class ReptileController {
     @RequestMapping("/getReptileRecord")
     public ResultVO getReptileRecord() {
         return ResultVO.of(reptileService.findReptileRecord());
+    }
+
+    @RequestMapping("/test")
+    public ResultVO test() {
+        cowlevelReptileService.asyncReptileWeb(null, null);
+        return ResultVO.ok();
     }
 
 }
