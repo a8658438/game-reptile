@@ -22,27 +22,6 @@ import java.util.*;
 public class HttpUtil {
     private static final RestTemplate restTemplate = new RestTemplate();
 
-    public static void main(String[] args) {
-        String loginUrl = "https://cowlevel.net/passport/login/submit";
-        Map<String, String> requestEntity = new HashMap<>();
-        requestEntity.put("email", "13428889873");
-        requestEntity.put("password", "Will87200407");
-        Optional<JSONObject> jsonObject = postDataForJson(loginUrl, requestEntity);
-        jsonObject.ifPresent(data -> {
-            List<String> list = new ArrayList<>();
-            list.add("auth_token=" + data.get("auth_token"));
-            HttpHeaders headers = new HttpHeaders();
-            headers.put(HttpHeaders.COOKIE, list);
-
-            String url = "https://cowlevel.net/following/element-data";
-            Map<String, Object> map = new HashMap<>();
-            map.put("page", 1);
-            Optional<Object> forObject = getDataForJson(url, headers, map);
-            System.out.println((JSONObject)forObject.get());
-        });
-
-    }
-
     /***
      * @Author: Chensr
      * @Description: 调用链接获取数据，返回data数组

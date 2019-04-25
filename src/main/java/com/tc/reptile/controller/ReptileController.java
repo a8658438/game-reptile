@@ -4,6 +4,7 @@ import com.tc.reptile.config.ReptileProperties;
 import com.tc.reptile.entity.WebInfoEntity;
 import com.tc.reptile.model.ResultVO;
 import com.tc.reptile.service.CowlevelReptileService;
+import com.tc.reptile.service.ReptileRecordService;
 import com.tc.reptile.service.ReptileService;
 import com.tc.reptile.service.WebInfoService;
 import org.slf4j.Logger;
@@ -30,12 +31,14 @@ public class ReptileController {
     private final WebInfoService webInfoService;
     private final ReptileProperties properties;
     private final CowlevelReptileService cowlevelReptileService;
+    private final ReptileRecordService recordService;
 
-    public ReptileController(ReptileService reptileService, WebInfoService webInfoService, ReptileProperties properties, CowlevelReptileService cowlevelReptileService) {
+    public ReptileController(ReptileService reptileService, WebInfoService webInfoService, ReptileProperties properties, CowlevelReptileService cowlevelReptileService, ReptileRecordService recordService) {
         this.reptileService = reptileService;
         this.webInfoService = webInfoService;
         this.properties = properties;
         this.cowlevelReptileService = cowlevelReptileService;
+        this.recordService = recordService;
     }
 
     @RequestMapping("/start")
@@ -56,21 +59,22 @@ public class ReptileController {
 
         if (webList.isEmpty()) {
             return ResultVO.fail(String.format("爬取失败，以下网站已达到当天爬取次数限制：%s", s.substring(1)));
-        } else {
-            // 对爬取操作进行记录
-            Integer id = reptileService.saveReptileRecord(webList.size());
-            webList.parallelStream().forEach(webInfoEntity -> reptileService.asyncReptileWeb(id, webInfoEntity));
-
-            String message = "执行成功，请等待爬取工作结束";
-            String msg = StringUtils.isEmpty(s.toString()) ?  message:
-            String.format(message + "。其中:【%s】已达到当日爬取次数限制，不再爬取。", s.substring(1));
-            return ResultVO.ok(msg);
         }
+
+        // 对爬取操作进行记录
+        Integer id = recordService.saveReptileRecord(webList.size());
+        webList.parallelStream().forEach(webInfoEntity -> reptileService.asyncReptileWeb(id, webInfoEntity));
+
+        String message = "执行成功，请等待爬取工作结束";
+        String msg = StringUtils.isEmpty(s.toString()) ? message :
+                String.format(message + "。其中:【%s】已达到当日爬取次数限制，不再爬取。", s.substring(1));
+        return ResultVO.ok(msg);
+
     }
 
     @RequestMapping("/getReptileRecord")
     public ResultVO getReptileRecord() {
-        return ResultVO.of(reptileService.findReptileRecord());
+        return ResultVO.of(recordService.findReptileRecord());
     }
 
     @RequestMapping("/test")
