@@ -10,6 +10,7 @@ import com.tc.reptile.entity.ArticleInfoEntity;
 import com.tc.reptile.entity.WebInfoEntity;
 import com.tc.reptile.util.DateUtil;
 import com.tc.reptile.util.HttpUtil;
+import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -73,31 +74,32 @@ public class CowlevelReptileService extends ReptileService {
         }
 
         // 获取网站分类
+        Map<String, Object> param = new HashMap<>();
+        param.put("is_rich_content", 1);
+        param.put("per_page", 50); // 每页数量
+        param.put("sort_type", "desc");
+
         List<JSONObject> typeList = getArticleTypeList();
-        typeList.forEach(type -> {
-            Map<String, Object> param = new HashMap<>();
-            for (int i = 0; i < 999; i++) {
+        for (JSONObject type : typeList) {
+            for (int i = 1; i < 999; i++) {
+                Object typeName = type.get("name");
+                logger.info("开始爬取网站:{},当前爬取分类:{},当前爬取页数:{}", webInfoEntity.getWebName(), typeName, i);
 
-                logger.info("开始爬取网站:{},当前爬取页数:{}", webInfoEntity.getWebName(), i);
                 param.put("page", i);
-                param.put("is_rich_content", 1);
-                param.put("per_page", 50); // 每页数量
-                param.put("sort_type", "desc");
                 param.put("tag_id", type.get("id"));
-                param.put("type_name", type.get("name"));
-                boolean b = reptileArticleList(webInfoEntity, param);
+                param.put("type_name", typeName);
 
+                boolean b = reptileArticleList(webInfoEntity, param);
                 // 达到了停止爬取条件
                 if (b) {
-                    // 更新网站信息
-                    repticleComplete(currentSecond, webInfoEntity);
                     break;
                 }
                 threadSleep(2000);
             }
-        });
+        }
 
-
+        // 更新网站信息
+        repticleComplete(currentSecond, webInfoEntity);
     }
 
     @Override
@@ -185,9 +187,14 @@ public class CowlevelReptileService extends ReptileService {
         return count == array.size();
     }
 
+    @Override
+    public void reptileArticleContent(Long sourceId) {
+
+    }
+
 
     @Override
-    public void reptileArticleContent() {
+    public void updateArticle(ArticleInfoEntity articleInfoEntity, Document document) {
 
     }
 }

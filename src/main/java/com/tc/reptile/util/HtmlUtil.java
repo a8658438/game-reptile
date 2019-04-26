@@ -59,4 +59,5 @@ public class HtmlUtil {
         html = delHtmlTag(html);
         return html.substring(0, html.length() > 100 ? 100 : html.length());
     }
+
 }

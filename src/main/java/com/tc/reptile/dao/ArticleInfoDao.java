@@ -15,6 +15,6 @@ import java.util.Optional;
 public interface ArticleInfoDao extends JpaRepository<ArticleInfoEntity, Long>, ArticleInfoJdbcDao {
     Optional<ArticleInfoEntity> findByUrl(String url);
 
-    List<ArticleInfoEntity> findAllByStatus(Integer status);
+    List<ArticleInfoEntity> findAllByStatusAndSourceId(Integer status, Long sourceId);
     List<ArticleInfoEntity> findAllByStatusAndSourceIdOrderByHotDesc(Integer status, Long sourceId);
 }

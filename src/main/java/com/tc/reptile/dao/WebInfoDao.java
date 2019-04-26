@@ -11,5 +11,5 @@ import java.util.List;
  * @Date: Create in 20:37 2019/3/29
  */
 public interface WebInfoDao extends JpaRepository<WebInfoEntity, Long> {
-    List<WebInfoEntity> findAllByIdIn(Integer[] ids);
+    List<WebInfoEntity> findAllByIdIn(Long[] ids);
 }

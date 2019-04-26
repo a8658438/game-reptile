@@ -2,18 +2,25 @@ package com.tc.reptile.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.tc.reptile.config.ReptileProperties;
+import com.tc.reptile.constant.ArticleStatusEnum;
+import com.tc.reptile.constant.YystvConstant;
 import com.tc.reptile.dao.*;
 import com.tc.reptile.entity.ArticleContentEntity;
 import com.tc.reptile.entity.ArticleInfoEntity;
 import com.tc.reptile.entity.GameAppearRecordEntity;
 import com.tc.reptile.entity.WebInfoEntity;
 import com.tc.reptile.util.DateUtil;
+import com.tc.reptile.util.HtmlUtil;
 import com.tc.reptile.util.RegexUtil;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -59,7 +66,7 @@ public abstract class ReptileService {
      * @param
      * @return: void
      */
-    public abstract void reptileArticleContent();
+    public abstract void reptileArticleContent(Long sourceId);
 
     /***
      * @Author: Chensr
@@ -87,10 +94,22 @@ public abstract class ReptileService {
     public void saveArticleContent(ArticleInfoEntity articleInfoEntity, String html) {
         // 保存文章内容
         ArticleContentEntity content = new ArticleContentEntity();
-        content.setContent(html); // 过滤掉emoji表情，防止报错
+        content.setContent(html);
         content.setArticleId(articleInfoEntity.getId());
         contentDao.save(content);
     }
+
+    /***
+     * @Author: Chensr
+     * @Description: 补充更新文章信息
+     * @Date: 2019/4/26 11:36
+     * @param articleInfoEntity
+ * @param document
+     * @return: void
+    */
+    @Transactional
+    public abstract void updateArticle(ArticleInfoEntity articleInfoEntity, Document document);
+
     /***
      * @Author: Chensr
      * @Description: 出现重复的或制定时间的，停止爬取，更新网站爬取时间

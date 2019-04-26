@@ -43,7 +43,7 @@ public class WebInfoService {
         return webInfoDao.findAll();
     }
 
-    public List<WebInfoEntity> findAllByIdIn(Integer[] ids) {
+    public List<WebInfoEntity> findAllByIdIn(Long[] ids) {
         return webInfoDao.findAllByIdIn(ids);
     }
 

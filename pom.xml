@@ -54,23 +54,24 @@
             <artifactId>jsoup</artifactId>
             <version>1.11.3</version>
         </dependency>
-        <dependency>
-            <groupId>com.vdurmont</groupId>
-            <artifactId>emoji-java</artifactId>
-            <version>4.0.0</version>
-        </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.nlpcn/nlp-lang -->
         <dependency>
             <groupId>org.nlpcn</groupId>
             <artifactId>nlp-lang</artifactId>
-            <version>1.7.7</version>
+            <version>1.7.2</version>
         </dependency>
 
         <dependency>
             <groupId>org.ansj</groupId>
             <artifactId>ansj_seg</artifactId>
             <version>5.1.2</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.nlpcn</groupId>
+                    <artifactId>nlp-lang</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 

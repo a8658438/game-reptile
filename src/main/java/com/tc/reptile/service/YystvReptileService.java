@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.io.IOException;
 import java.util.*;
 
 @Service
@@ -76,51 +77,31 @@ public class YystvReptileService extends ReptileService {
      * @param
      * @return: void
      */
-    public void reptileArticleContent() {
+    @Transactional
+    public void reptileArticleContent(Long sourceId) {
         // 查询文章列表
-        List<ArticleInfoEntity> articleList = articleInfoDao.findAllByStatus(ArticleStatusEnum.NOT_YET.getStatus());
+        List<ArticleInfoEntity> articleList = articleInfoDao.findAllByStatusAndSourceId(ArticleStatusEnum.NOT_YET.getStatus(), sourceId);
         for (ArticleInfoEntity article : articleList) {
             logger.info("爬去文章内容，文章ID：{}", article.getId());
+            Document document = null;
             try {
-                saveGameData(article, HttpUtil.getDocument(article.getUrl(), "http://www.yystv.cn/"));
-
-                // 睡眠2秒，防止被网站拉进黑名单
-                Thread.sleep(2000);
-            } catch (Exception e) {
+                document = HttpUtil.getDocument(article.getUrl(), "http://www.yystv.cn/");
+            } catch (IOException e) {
                 logger.error(e.getMessage(), e);
             }
+
+            String html = document.getElementsByClass(YystvConstant.ARTICLE_CONTENT).get(0).child(0).html();
+            saveGameData(article, html);
+            saveArticleContent(article, html);
+            updateArticle(article, document);
+            threadSleep(2000);
         }
 
     }
 
-    /***
-     * @Author: Chensr
-     * @Description: 保存文章相关的游戏数据
-     * @Date: 2019/3/30 16:55
-     * @param articleInfoEntity
-     * @param html
-     * @return: void
-     */
-    @Transactional
-    public void saveGameData(ArticleInfoEntity articleInfoEntity, Document document) {
+    @Override
+    public void updateArticle(ArticleInfoEntity articleInfoEntity, Document document) {
         String html = document.getElementsByClass(YystvConstant.ARTICLE_CONTENT).get(0).child(0).html();
-        // 保存文章提到的游戏
-        List<GameAppearRecordEntity> recordList = new ArrayList<>();
-        RegexUtil.getGames(html).forEach(game -> {
-            GameAppearRecordEntity record = new GameAppearRecordEntity();
-            record.setArticleId(articleInfoEntity.getId());
-            record.setReleaseTime(articleInfoEntity.getReleaseTime());
-            record.setGameName(game);
-            recordList.add(record);
-        });
-        recordDao.saveAll(recordList);
-
-        // 保存文章内容
-        ArticleContentEntity content = new ArticleContentEntity();
-        content.setContent(html); // 过滤掉emoji表情，防止报错
-        content.setArticleId(articleInfoEntity.getId());
-        contentDao.save(content);
-
         // 更新文章状态和点赞次数
         Elements tags = document.getElementsByClass(YystvConstant.HOT_CLASS);
         if (!tags.isEmpty()) {
@@ -135,68 +116,24 @@ public class YystvReptileService extends ReptileService {
         articleInfoDao.save(articleInfoEntity);
     }
 
-    /***
-     * @Author: Chensr
-     * @Description: 出现重复的或制定时间的，停止爬取，更新网站爬取时间
-     * @Date: 2019/3/30 14:17
-     * @param reptileLastTime
-     * @param releaseTime
-     * @param articleUrl
-     * @return: boolean
-     */
-    private boolean stopReptile(Integer reptileLastTime, Integer releaseTime, String articleUrl) {
-        Optional<ArticleInfoEntity> infoEntity = articleInfoDao.findByUrl(articleUrl);
-        return infoEntity.isPresent() || (reptileLastTime != null && releaseTime < reptileLastTime) || releaseTime < properties.getReadTime();
-    }
-
-    /**
-     * 开始数据爬取工作
-     *
-     * @param size
-     * @return
-     */
-    public Integer saveReptileRecord(Integer size) {
-        // 生成爬取记录
-        Integer currentSecond = DateUtil.getCurrentSecond();
-        ReptileRecordEntity record = new ReptileRecordEntity();
-        record.setId(currentSecond);
-        record.setReptileCount(size);
-        record.setFinishCount(0);
-        record.setReptileTime(currentSecond);
-        reptileRecordDao.save(record);
-        return currentSecond;
-    }
-
-    @Async
-    @Transactional
+//    @Async
     public void asyncReptileWeb(Integer currentSecond, WebInfoEntity webInfoEntity) {
         Map<String, Object> param = new HashMap<>();
         for (int i = 0; i < 999; i++) {
-
             logger.info("开始爬取网站:{},当前爬取页数:{}", webInfoEntity.getWebName(), i);
             param.put("page", i);
             boolean b = reptileArticleList(webInfoEntity, param);
 
             // 达到了停止爬取条件
             if (b) {
-                // 爬取文章内容
-                this.reptileArticleContent();
-
-                // 更新网站信息
-                webInfoEntity.setLastTime(DateUtil.getCurrentSecond());
-                webInfoEntity.setReptileCount(webInfoEntity.getReptileCount() + 1);
-                webInfoDao.save(webInfoEntity);
-
-                // 更新爬取记录信息
-                reptileRecordDao.updateRecord(DateUtil.getCurrentSecond(), currentSecond);
                 break;
             }
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                logger.error(e.getMessage(), e);
-            }
+            threadSleep(2000);
         }
+
+        // 爬取文章内容
+        reptileArticleContent(webInfoEntity.getId());
+        repticleComplete(currentSecond, webInfoEntity);
     }
 
     @Override

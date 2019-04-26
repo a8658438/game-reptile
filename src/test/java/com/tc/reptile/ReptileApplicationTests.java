@@ -20,8 +20,6 @@ import java.util.Properties;
 @SpringBootTest
 public class ReptileApplicationTests {
     @Autowired
-    private ReptileService reptileService;
-    @Autowired
     private WebInfoService webInfoService;
     @Autowired
     private ReptileProperties properties;
@@ -32,7 +30,7 @@ public class ReptileApplicationTests {
         Map<String, Object> param = new HashMap<>();
         optional.ifPresent(webInfoEntity -> {
             param.put ("page", 3);
-            reptileService.reptileArticleList(webInfoEntity, param);
+//            reptileService.reptileArticleList(webInfoEntity, param);
         });
     }
 
@@ -44,6 +42,6 @@ public class ReptileApplicationTests {
 
     @Test
     public void readContent() {
-        reptileService.reptileArticleContent();
+//        reptileService.reptileArticleContent();
     }
 }
