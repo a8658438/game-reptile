@@ -1,6 +1,7 @@
 package com.tc.reptile.model;
 
 import javax.persistence.Column;
+import java.util.List;
 
 public class ArticleInfoDTO {
     private Long id;
@@ -36,7 +37,7 @@ public class ArticleInfoDTO {
     /**
      * 文章分类
      */
-    private String type;
+    private List<String> typeList;
 
     /**
      * 发布时间
@@ -118,12 +119,12 @@ public class ArticleInfoDTO {
         this.contentBreviary = contentBreviary;
     }
 
-    public String getType() {
-        return type;
+    public List<String> getTypeList() {
+        return typeList;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setTypeList(List<String> typeList) {
+        this.typeList = typeList;
     }
 
     public Integer getReleaseTime() {

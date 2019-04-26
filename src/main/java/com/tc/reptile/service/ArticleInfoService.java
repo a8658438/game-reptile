@@ -1,14 +1,12 @@
 package com.tc.reptile.service;
 
-import com.tc.reptile.dao.ArticleContentDao;
-import com.tc.reptile.dao.ArticleInfoDao;
-import com.tc.reptile.dao.GameAppearRecordDao;
-import com.tc.reptile.dao.WebInfoDao;
+import com.tc.reptile.dao.*;
 import com.tc.reptile.entity.ArticleContentEntity;
 import com.tc.reptile.entity.GameAppearRecordEntity;
 import com.tc.reptile.model.*;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,13 +20,13 @@ public class ArticleInfoService {
     private final ArticleInfoDao articleInfoDao;
     private final ArticleContentDao contentDao;
     private final GameAppearRecordDao recordDao;
-    private final WebInfoDao webInfoDao;
+    private final ArticleTypeInfoDao articleTypeInfoDao;
 
-    public ArticleInfoService(ArticleInfoDao articleInfoDao, ArticleContentDao contentDao, GameAppearRecordDao recordDao, WebInfoDao webInfoDao) {
+    public ArticleInfoService(ArticleInfoDao articleInfoDao, ArticleContentDao contentDao, GameAppearRecordDao recordDao, ArticleTypeInfoDao articleTypeInfoDao) {
         this.articleInfoDao = articleInfoDao;
         this.contentDao = contentDao;
         this.recordDao = recordDao;
-        this.webInfoDao = webInfoDao;
+        this.articleTypeInfoDao = articleTypeInfoDao;
     }
 
     public PageDTO<ArticleInfoDTO> pageArticleList(ArticleParam param, PageParam page) {
@@ -41,6 +39,11 @@ public class ArticleInfoService {
                 games.append("、" + record.getGameName());
             });
             article.setIncludeGames(games.length() > 1 ? games.substring(1) : "");
+
+            // 查询文章的分类
+//            List<String> typeList = new ArrayList<>();
+//            articleTypeInfoDao.findAllByArticleId(article.getId()).forEach(type -> typeList.add(type.getTypeName()));
+//            article.setTypeList(typeList);
         });
         return articlePage;
     }

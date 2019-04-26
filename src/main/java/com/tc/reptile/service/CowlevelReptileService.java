@@ -32,8 +32,8 @@ public class CowlevelReptileService extends ReptileService {
 
     private final CowlevelProperties cowlevelProperties;
 
-    public CowlevelReptileService(WebInfoDao webInfoDao, ArticleInfoDao articleInfoDao, ReptileProperties properties, GameAppearRecordDao recordDao, ArticleContentDao contentDao, ReptileRecordDao reptileRecordDao, CowlevelProperties cowlevelProperties) {
-        super(webInfoDao, articleInfoDao, properties, recordDao, contentDao, reptileRecordDao);
+    public CowlevelReptileService(WebInfoDao webInfoDao, ArticleInfoDao articleInfoDao, ReptileProperties properties, GameAppearRecordDao recordDao, ArticleContentDao contentDao, ReptileRecordDao reptileRecordDao, CowlevelProperties cowlevelProperties, ArticleTypeInfoDao articleTypeInfoDao) {
+        super(webInfoDao, articleInfoDao, properties, recordDao, contentDao, reptileRecordDao, articleTypeInfoDao);
         this.cowlevelProperties = cowlevelProperties;
     }
 
@@ -87,8 +87,6 @@ public class CowlevelReptileService extends ReptileService {
 
                 param.put("page", i);
                 param.put("tag_id", type.get("id"));
-                param.put("type_name", typeName);
-
                 boolean b = reptileArticleList(webInfoEntity, param);
                 // 达到了停止爬取条件
                 if (b) {
@@ -98,12 +96,14 @@ public class CowlevelReptileService extends ReptileService {
             }
         }
 
+        // 爬取文章内容
+        reptileArticleContent(webInfoEntity.getId());
         // 更新网站信息
         repticleComplete(currentSecond, webInfoEntity);
     }
 
     @Override
-    protected ArticleInfoEntity analysisArticle(String articleUrl, Integer releaseTime, WebInfoEntity webInfoEntity, JSONObject article, String type) {
+    protected ArticleInfoEntity analysisArticle(String articleUrl, Integer releaseTime, WebInfoEntity webInfoEntity, JSONObject article) {
         ArticleInfoEntity articleInfo = new ArticleInfoEntity();
         articleInfo.setAuthor(((JSONObject) article.get(CowlevelConstant.ARTICLE_AUTHOR)).getString(CowlevelConstant.ARTICLE_AUTHOR_NAME));
         articleInfo.setCreateTime(DateUtil.getCurrentSecond());
@@ -112,11 +112,10 @@ public class CowlevelReptileService extends ReptileService {
         articleInfo.setSource(webInfoEntity.getWebName());
         articleInfo.setTitle(article.getString(CowlevelConstant.ARTICLE_TITLE));
         articleInfo.setUrl(articleUrl);
-        articleInfo.setStatus(ArticleStatusEnum.ALREADY.getStatus());
+        articleInfo.setStatus(ArticleStatusEnum.NOT_YET.getStatus());
         articleInfo.setImageUrl(article.getString(CowlevelConstant.IMAGE_URL));
         articleInfo.setContentBreviary(((JSONObject) article.get(CowlevelConstant.BRIEF_CONTENT)).getString("desc"));
         articleInfo.setHot(article.getInteger(CowlevelConstant.HOT));
-        articleInfo.setType(type);
         return articleInfo;
     }
 
@@ -179,7 +178,7 @@ public class CowlevelReptileService extends ReptileService {
             }
 
             // 解析文章信息并保存
-            ArticleInfoEntity articleInfo = analysisArticle(articleUrl, releaseTime, webInfoEntity, article, (String) param.get("type_name"));
+            ArticleInfoEntity articleInfo = analysisArticle(articleUrl, releaseTime, webInfoEntity, article);
             articleInfoDao.save(articleInfo);
             // 保存文章内容
             saveArticleContent(articleInfo, article.getString(CowlevelConstant.CONTENT));
@@ -189,12 +188,28 @@ public class CowlevelReptileService extends ReptileService {
 
     @Override
     public void reptileArticleContent(Long sourceId) {
+        // 查询文章列表
+        List<ArticleInfoEntity> articleList = articleInfoDao.findAllByStatusAndSourceId(ArticleStatusEnum.NOT_YET.getStatus(), sourceId);
 
+        for (ArticleInfoEntity article : articleList) {
+            logger.info("爬取文章内容，文章ID：{}, sourceId: {}", article.getId(), sourceId);
+            Document document = HttpUtil.getDocument(article.getUrl());
+            document.getElementsByClass("related-tag").forEach(element -> {
+                String type = element.child(0).html();
+                saveArticleType(article.getId(), sourceId, type);
+            });
+
+            // 更新文章状态
+            article.setStatus(ArticleStatusEnum.ALREADY.getStatus());
+            updateArticle(article, null);
+
+            threadSleep(2000);
+        }
     }
 
 
     @Override
     public void updateArticle(ArticleInfoEntity articleInfoEntity, Document document) {
-
+        articleInfoDao.save(articleInfoEntity);
     }
 }

@@ -5,6 +5,8 @@ import com.alibaba.fastjson.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -20,6 +22,7 @@ import java.util.*;
  * @Date: Create in 14:42 2019/3/30
  */
 public class HttpUtil {
+    private static final Logger logger = LoggerFactory.getLogger(HttpUtil.class);
     private static final RestTemplate restTemplate = new RestTemplate();
 
     /***
@@ -96,8 +99,9 @@ public class HttpUtil {
      * @param baseUrl
      * @return: org.jsoup.nodes.Document
      */
-    public static Document getDocument(String url, String baseUrl) throws IOException {
-        Document document = Jsoup.connect(url).get();
+    public static Document getYysArticleDocument(String url, String baseUrl){
+        Document document = getDocument(url);
+
         Elements imgs = document.getElementsByTag("img");
         imgs.forEach(element -> {
             String href = element.attr("data-original");
@@ -110,6 +114,21 @@ public class HttpUtil {
                 element.attr("href", baseUrl + href);
             }
         });
+        return document;
+    }
+
+    /**
+     * 获取html页面的document
+     * @param url
+     * @return
+     */
+    public static Document getDocument(String url) {
+        Document document = null;
+        try {
+            document = Jsoup.connect(url).get();
+        } catch (IOException e) {
+            logger.error(e.getMessage(),e);
+        }
         return document;
     }
 }

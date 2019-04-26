@@ -10,12 +10,10 @@ import com.tc.reptile.entity.*;
 import com.tc.reptile.util.DateUtil;
 import com.tc.reptile.util.HtmlUtil;
 import com.tc.reptile.util.HttpUtil;
-import com.tc.reptile.util.RegexUtil;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -27,8 +25,8 @@ import java.util.*;
 public class YystvReptileService extends ReptileService {
     private Logger logger = LoggerFactory.getLogger(ReptileService.class);
 
-    public YystvReptileService(WebInfoDao webInfoDao, ArticleInfoDao articleInfoDao, ReptileProperties properties, GameAppearRecordDao recordDao, ArticleContentDao contentDao, ReptileRecordDao reptileRecordDao) {
-        super(webInfoDao, articleInfoDao, properties, recordDao, contentDao, reptileRecordDao);
+    public YystvReptileService(WebInfoDao webInfoDao, ArticleInfoDao articleInfoDao, ReptileProperties properties, GameAppearRecordDao recordDao, ArticleContentDao contentDao, ReptileRecordDao reptileRecordDao, ArticleTypeInfoDao articleTypeInfoDao) {
+        super(webInfoDao, articleInfoDao, properties, recordDao, contentDao, reptileRecordDao, articleTypeInfoDao);
     }
 
 
@@ -63,7 +61,7 @@ public class YystvReptileService extends ReptileService {
                 continue;
             }
 
-            list.add(analysisArticle(articleUrl, releaseTime, webInfoEntity, article, null));
+            list.add(analysisArticle(articleUrl, releaseTime, webInfoEntity, article));
         }
 
         articleInfoDao.saveAll(list);
@@ -81,19 +79,19 @@ public class YystvReptileService extends ReptileService {
     public void reptileArticleContent(Long sourceId) {
         // 查询文章列表
         List<ArticleInfoEntity> articleList = articleInfoDao.findAllByStatusAndSourceId(ArticleStatusEnum.NOT_YET.getStatus(), sourceId);
+
         for (ArticleInfoEntity article : articleList) {
-            logger.info("爬去文章内容，文章ID：{}", article.getId());
-            Document document = null;
-            try {
-                document = HttpUtil.getDocument(article.getUrl(), "http://www.yystv.cn/");
-            } catch (IOException e) {
-                logger.error(e.getMessage(), e);
-            }
+            logger.info("爬取文章内容，文章ID：{}", article.getId());
+            Document document = HttpUtil.getYysArticleDocument(article.getUrl(), "http://www.yystv.cn/");
 
             String html = document.getElementsByClass(YystvConstant.ARTICLE_CONTENT).get(0).child(0).html();
+            String type = document.getElementsByClass(YystvConstant.ARTICLE_TYPE).get(0).text();
+
+            saveArticleType(article.getId(),sourceId, type);
             saveGameData(article, html);
             saveArticleContent(article, html);
             updateArticle(article, document);
+
             threadSleep(2000);
         }
 
@@ -108,15 +106,12 @@ public class YystvReptileService extends ReptileService {
             String count = tags.get(0).html();
             articleInfoEntity.setHot(StringUtils.isEmpty(count) ? 0 : Integer.parseInt(count));
         }
-        String type = document.getElementsByClass(YystvConstant.ARTICLE_TYPE).get(0).text();
 
-        articleInfoEntity.setType(type);
         articleInfoEntity.setContentBreviary(HtmlUtil.getBreviary(html));
         articleInfoEntity.setStatus(ArticleStatusEnum.ALREADY.getStatus());
         articleInfoDao.save(articleInfoEntity);
     }
 
-//    @Async
     public void asyncReptileWeb(Integer currentSecond, WebInfoEntity webInfoEntity) {
         Map<String, Object> param = new HashMap<>();
         for (int i = 0; i < 999; i++) {
@@ -137,7 +132,7 @@ public class YystvReptileService extends ReptileService {
     }
 
     @Override
-    protected ArticleInfoEntity analysisArticle(String articleUrl, Integer releaseTime, WebInfoEntity webInfoEntity, JSONObject article, String type) {
+    protected ArticleInfoEntity analysisArticle(String articleUrl, Integer releaseTime, WebInfoEntity webInfoEntity, JSONObject article) {
         ArticleInfoEntity articleInfo = new ArticleInfoEntity();
         articleInfo.setAuthor(article.getString(YystvConstant.ARTICLE_AUTHOR));
         articleInfo.setCreateTime(DateUtil.getCurrentSecond());

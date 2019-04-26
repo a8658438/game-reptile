@@ -2,29 +2,17 @@ package com.tc.reptile.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.tc.reptile.config.ReptileProperties;
-import com.tc.reptile.constant.ArticleStatusEnum;
-import com.tc.reptile.constant.YystvConstant;
 import com.tc.reptile.dao.*;
-import com.tc.reptile.entity.ArticleContentEntity;
-import com.tc.reptile.entity.ArticleInfoEntity;
-import com.tc.reptile.entity.GameAppearRecordEntity;
-import com.tc.reptile.entity.WebInfoEntity;
+import com.tc.reptile.entity.*;
 import com.tc.reptile.util.DateUtil;
-import com.tc.reptile.util.HtmlUtil;
 import com.tc.reptile.util.RegexUtil;
 import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * @Author: Chensr
@@ -40,14 +28,17 @@ public abstract class ReptileService {
     protected final GameAppearRecordDao recordDao;
     protected final ArticleContentDao contentDao;
     protected final ReptileRecordDao reptileRecordDao;
+    protected final ArticleTypeInfoDao articleTypeInfoDao;
 
-    public ReptileService(WebInfoDao webInfoDao, ArticleInfoDao articleInfoDao, ReptileProperties properties, GameAppearRecordDao recordDao, ArticleContentDao contentDao, ReptileRecordDao reptileRecordDao) {
+
+    public ReptileService(WebInfoDao webInfoDao, ArticleInfoDao articleInfoDao, ReptileProperties properties, GameAppearRecordDao recordDao, ArticleContentDao contentDao, ReptileRecordDao reptileRecordDao, ArticleTypeInfoDao articleTypeInfoDao) {
         this.webInfoDao = webInfoDao;
         this.articleInfoDao = articleInfoDao;
         this.properties = properties;
         this.recordDao = recordDao;
         this.contentDao = contentDao;
         this.reptileRecordDao = reptileRecordDao;
+        this.articleTypeInfoDao = articleTypeInfoDao;
     }
 
     /***
@@ -104,9 +95,9 @@ public abstract class ReptileService {
      * @Description: 补充更新文章信息
      * @Date: 2019/4/26 11:36
      * @param articleInfoEntity
- * @param document
+     * @param document
      * @return: void
-    */
+     */
     @Transactional
     public abstract void updateArticle(ArticleInfoEntity articleInfoEntity, Document document);
 
@@ -130,6 +121,7 @@ public abstract class ReptileService {
 
     /**
      * 线程睡眠时间
+     *
      * @param millis
      */
     protected void threadSleep(int millis) {
@@ -142,6 +134,7 @@ public abstract class ReptileService {
 
     /**
      * 爬取结束，更新爬取记录
+     *
      * @param currentSecond
      * @param webInfoEntity
      */
@@ -153,18 +146,32 @@ public abstract class ReptileService {
         webInfoDao.save(webInfoEntity);
 
         // 更新爬取记录信息
-        reptileRecordDao.updateRecord(DateUtil.getCurrentSecond(),currentSecond);
+        reptileRecordDao.updateRecord(DateUtil.getCurrentSecond(), currentSecond);
     }
 
+    /**
+     * 保存文章与分类的关系
+     * @param articleId
+     * @param sourceId
+     * @param type
+     */
+    public void saveArticleType(Long articleId, Long sourceId, String type) {
+        // 保存与分类的关系
+        ArticleTypeInfoEntity articleType = new ArticleTypeInfoEntity();
+        articleType.setArticleId(articleId);
+        articleType.setSourceId(sourceId);
+        articleType.setTypeName(type);
+        articleTypeInfoDao.save(articleType);
+    }
 
     /**
      * 解析文章对象
+     *
      * @param articleUrl
      * @param releaseTime
      * @param webInfoEntity
      * @param article
-     * @param type
      * @return
      */
-    protected abstract ArticleInfoEntity analysisArticle( String articleUrl,Integer releaseTime, WebInfoEntity webInfoEntity, JSONObject article,String type);
+    protected abstract ArticleInfoEntity analysisArticle(String articleUrl, Integer releaseTime, WebInfoEntity webInfoEntity, JSONObject article);
 }

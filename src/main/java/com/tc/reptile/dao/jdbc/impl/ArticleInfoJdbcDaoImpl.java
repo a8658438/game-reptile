@@ -85,16 +85,4 @@ public class ArticleInfoJdbcDaoImpl extends JdbcDaoSupport implements ArticleInf
         logger.info(" data with SQL: {},param:{},{}", sql, startTime, endTime);
         return getJdbcTemplate().queryForObject(sql, new Object[]{startTime, endTime}, Integer.class);
     }
-
-    @Override
-    public List<Map<String, Object>> countArticleType(Long id) {
-        String sql = "select t.type,count(1) as typeCount from article_info t where t.create_time between ? and ? group by t.type";
-
-        DateTime dateTime = new DateTime();
-        Integer endTime = DateUtil.getDayEndSecond(dateTime);
-        Integer startTime = DateUtil.getDayStartSecond(dateTime.plusMonths(-3));
-
-        logger.info(" data with SQL: {},param:{},{}", sql, startTime, endTime);
-        return getJdbcTemplate().queryForList(sql, startTime, endTime);
-    }
 }

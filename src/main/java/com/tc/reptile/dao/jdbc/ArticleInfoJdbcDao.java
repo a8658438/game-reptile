@@ -17,6 +17,4 @@ public interface ArticleInfoJdbcDao {
     PageDTO<ArticleInfoDTO> pageArticleList(ArticleParam param, PageParam page);
 
     Integer countArticleByTimeRank(Integer startTime, Integer endTime);
-
-    List<Map<String, Object>> countArticleType(Long id);
 }

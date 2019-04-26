@@ -1,13 +1,13 @@
 package com.tc.reptile.entity;
 
 import javax.persistence.*;
-import javax.persistence.criteria.CriteriaBuilder;
 import java.io.Serializable;
+import java.util.List;
 
 /**
- * @Description  
+ * @Description
  * @Author  Yzjiang
- * @Date 2019-03-29 
+ * @Date 2019-03-29
  */
 
 @Entity
@@ -55,11 +55,6 @@ public class ArticleInfoEntity implements Serializable {
 	 */
    	@Column(name = "content_breviary" )
 	private String contentBreviary;
-   	/**
-	 * 文章分类
-	 */
-   	@Column(name = "type" )
-	private String type;
 
 	/**
 	 * 发布时间
@@ -91,6 +86,20 @@ public class ArticleInfoEntity implements Serializable {
    	@Column(name = "create_time" )
 	private Integer createTime;
 
+	/**
+	 * 分类数组，仅供展示使用
+	 */
+	@Transient
+	private List<String> typeList;
+
+
+	public List<String> getTypeList() {
+		return typeList;
+	}
+
+	public void setTypeList(List<String> typeList) {
+		this.typeList = typeList;
+	}
 
 	public String getContentBreviary() {
 		return contentBreviary;
@@ -110,14 +119,6 @@ public class ArticleInfoEntity implements Serializable {
 
 	public void setImageUrl(String imageUrl) {
 		this.imageUrl = imageUrl;
-	}
-
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
 	}
 
 	public Long getSourceId() {

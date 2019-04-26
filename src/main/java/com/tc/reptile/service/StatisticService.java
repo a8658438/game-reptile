@@ -2,6 +2,7 @@ package com.tc.reptile.service;
 
 import com.tc.reptile.constant.ArticleStatusEnum;
 import com.tc.reptile.dao.ArticleInfoDao;
+import com.tc.reptile.dao.ArticleTypeInfoDao;
 import com.tc.reptile.dao.GameAppearRecordDao;
 import com.tc.reptile.dao.WebInfoDao;
 import com.tc.reptile.entity.ArticleInfoEntity;
@@ -9,11 +10,9 @@ import com.tc.reptile.model.*;
 import com.tc.reptile.util.DateUtil;
 import com.tc.reptile.util.NumberUtil;
 import org.joda.time.DateTime;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
-import java.text.NumberFormat;
-import java.time.Instant;
 import java.util.*;
 
 @Service
@@ -21,11 +20,13 @@ public class StatisticService {
     private final WebInfoDao webInfoDao;
     private final ArticleInfoDao articleInfoDao;
     private final GameAppearRecordDao recordDao;
+    private final ArticleTypeInfoDao articleTypeInfoDao;
 
-    public StatisticService(WebInfoDao webInfoDao, ArticleInfoDao articleInfoDao, GameAppearRecordDao recordDao) {
+    public StatisticService(WebInfoDao webInfoDao, ArticleInfoDao articleInfoDao, GameAppearRecordDao recordDao, ArticleTypeInfoDao articleTypeInfoDao) {
         this.webInfoDao = webInfoDao;
         this.articleInfoDao = articleInfoDao;
         this.recordDao = recordDao;
+        this.articleTypeInfoDao = articleTypeInfoDao;
     }
 
     public List<WebArticleHotDTO> currentHotRank() {
@@ -34,7 +35,15 @@ public class StatisticService {
         webInfoDao.findAll().forEach(web -> {
             WebArticleHotDTO hot = new WebArticleHotDTO();
             hot.setWebName(web.getWebName());
-            List<ArticleInfoEntity> articleList = articleInfoDao.findAllByStatusAndSourceIdOrderByHotDesc(ArticleStatusEnum.ALREADY.getStatus(), web.getId());
+
+            // 查询热度文章
+            List<ArticleInfoEntity> articleList = articleInfoDao.findAllByStatusAndSourceIdOrderByHotDesc(ArticleStatusEnum.ALREADY.getStatus(), web.getId(), PageRequest.of(0, 20));
+            articleList.forEach(articleInfoEntity -> {
+                // 查询文章的分类
+                List<String> typeList = new ArrayList<>();
+                articleTypeInfoDao.findAllByArticleId(articleInfoEntity.getId()).forEach(type -> typeList.add(type.getTypeName()));
+                articleInfoEntity.setTypeList(typeList);
+            });
             hot.setArticleList(articleList);
             list.add(hot);
         });
@@ -178,12 +187,12 @@ public class StatisticService {
      * @Date: 2019/4/22 20:54
      * @param
      * @return: java.lang.Object
-    */
-    public  List<ArticleTypeCountDTO> articleTypeCount() {
+     */
+    public List<ArticleTypeCountDTO> articleTypeCount() {
         List<ArticleTypeCountDTO> list = new ArrayList<>();
         // 获取网站数量
         webInfoDao.findAll().forEach(web -> {
-            List<Map<String, Object>> typeList = articleInfoDao.countArticleType(web.getId());
+            List<Map<String, Object>> typeList = articleTypeInfoDao.countType(web.getId());
 
             ArticleTypeCountDTO dto = new ArticleTypeCountDTO();
             dto.setId(web.getId());
