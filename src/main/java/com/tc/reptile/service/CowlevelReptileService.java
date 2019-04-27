@@ -200,9 +200,7 @@ public class CowlevelReptileService extends ReptileService {
             });
 
             // 更新文章状态
-            article.setStatus(ArticleStatusEnum.ALREADY.getStatus());
             updateArticle(article, null);
-
             threadSleep(2000);
         }
     }
@@ -210,6 +208,7 @@ public class CowlevelReptileService extends ReptileService {
 
     @Override
     public void updateArticle(ArticleInfoEntity articleInfoEntity, Document document) {
+        articleInfoEntity.setStatus(ArticleStatusEnum.ALREADY.getStatus());
         articleInfoDao.save(articleInfoEntity);
     }
 }

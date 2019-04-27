@@ -6,9 +6,8 @@ import com.tc.reptile.dao.*;
 import com.tc.reptile.entity.ArticleInfoEntity;
 import com.tc.reptile.entity.WebInfoEntity;
 import com.tc.reptile.util.DateUtil;
+import com.tc.reptile.util.HtmlUtil;
 import com.tc.reptile.util.HttpUtil;
-import com.tc.reptile.util.RegexUtil;
-import org.joda.time.DateTime;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -16,9 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -42,11 +39,14 @@ public class GameLookReptileService extends ReptileService {
         if (document == null) {
             return false;
         }
-        Elements articles = document.getElementsByTag("item");
+
+        List<Element> articles = new ArrayList<>();
+        document.getElementsByClass("article-list").forEach(element -> articles.addAll(element.getElementsByClass("item")));
 
         int count = 0; //计数器统计是否达到停止爬取条件。因为有的不同分类有相同文章
         for (Element article : articles) {
             String href = article.child(0).child(0).attr("href");
+            System.out.println(article.child(0).child(0).attr("title"));
             Integer releaseTime = DateUtil.getDateSecond(article.getElementsByClass("date").get(0).text(), DateUtil.FORMAT_TYPE_1);
 
             // 判断是否达到停止爬取的条件
@@ -97,7 +97,9 @@ public class GameLookReptileService extends ReptileService {
 //                articleInfoEntity.setAuthor(element.text().replace("作者：", ""));
 //            }
 //        });
-
+        // 获取缩略内容
+        String html = document.getElementsByClass("entry-content").html();
+        articleInfoEntity.setContentBreviary(HtmlUtil.getBreviary(html));
         articleInfoEntity.setStatus(ArticleStatusEnum.ALREADY.getStatus());
         articleInfoDao.save(articleInfoEntity);
     }
