@@ -41,6 +41,7 @@ public class YystvReptileService extends ReptileService {
     public boolean reptileArticleList(WebInfoEntity webInfoEntity, Map<String, Object> param) {
         List<ArticleInfoEntity> list = new ArrayList<>();
         // 查询数据
+        param.put("page", (int) param.get("page") - 1);
         Optional<JSONArray> data = HttpUtil.getDataForJson(webInfoEntity.getUrl(), param);
         if (!data.isPresent()) {
             return false;
@@ -110,25 +111,6 @@ public class YystvReptileService extends ReptileService {
         articleInfoEntity.setContentBreviary(HtmlUtil.getBreviary(html));
         articleInfoEntity.setStatus(ArticleStatusEnum.ALREADY.getStatus());
         articleInfoDao.save(articleInfoEntity);
-    }
-
-    public void asyncReptileWeb(Integer currentSecond, WebInfoEntity webInfoEntity) {
-        Map<String, Object> param = new HashMap<>();
-        for (int i = 0; i < 999; i++) {
-            logger.info("开始爬取网站:{},当前爬取页数:{}", webInfoEntity.getWebName(), i);
-            param.put("page", i);
-            boolean b = reptileArticleList(webInfoEntity, param);
-
-            // 达到了停止爬取条件
-            if (b) {
-                break;
-            }
-            threadSleep(2000);
-        }
-
-        // 爬取文章内容
-        reptileArticleContent(webInfoEntity.getId());
-        repticleComplete(currentSecond, webInfoEntity);
     }
 
     @Override
