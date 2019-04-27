@@ -103,7 +103,8 @@ public class CowlevelReptileService extends ReptileService {
     }
 
     @Override
-    protected ArticleInfoEntity analysisArticle(String articleUrl, Integer releaseTime, WebInfoEntity webInfoEntity, JSONObject article) {
+    protected ArticleInfoEntity analysisArticle(String articleUrl, Integer releaseTime, WebInfoEntity webInfoEntity, Object articleObj) {
+        JSONObject article = (JSONObject) articleObj;
         ArticleInfoEntity articleInfo = new ArticleInfoEntity();
         articleInfo.setAuthor(((JSONObject) article.get(CowlevelConstant.ARTICLE_AUTHOR)).getString(CowlevelConstant.ARTICLE_AUTHOR_NAME));
         articleInfo.setCreateTime(DateUtil.getCurrentSecond());
@@ -155,7 +156,6 @@ public class CowlevelReptileService extends ReptileService {
      * @param
      * @return: void
      */
-    @Transactional
     public boolean reptileArticleList(WebInfoEntity webInfoEntity, Map<String, Object> param) {
         // 查询数据
         Optional<Object> data = HttpUtil.getDataForJson(webInfoEntity.getUrl(), buildHttpHeader(), param);

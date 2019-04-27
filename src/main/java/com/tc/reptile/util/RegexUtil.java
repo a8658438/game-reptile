@@ -12,6 +12,21 @@ import java.util.regex.Pattern;
  */
 public class RegexUtil {
     public static String REGEX_GAME_NAME = "《(.*?)》";
+    public static String REGEX_CHINESE = "[\u4e00-\u9fa5]";// 中文正则
+    public static String REGEX_ENGLISH = "[a-zA-z]"; // 英文正则
+
+    /***
+     * @Author: Chensr
+     * @Description: 删除中文
+     * @Date: 2019/4/28 0:40
+     * @param str
+     * @return: java.lang.String
+    */
+    public static String replaceReg(String str, String reg) {
+        Pattern pat = Pattern.compile(reg);
+        Matcher mat = pat.matcher(str);
+        return mat.replaceAll("").trim();
+    }
 
     /***
      * @Author: Chensr

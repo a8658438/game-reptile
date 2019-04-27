@@ -37,7 +37,7 @@ public class YystvReptileService extends ReptileService {
      * @param
      * @return: void
      */
-    @Transactional
+
     public boolean reptileArticleList(WebInfoEntity webInfoEntity, Map<String, Object> param) {
         List<ArticleInfoEntity> list = new ArrayList<>();
         // 查询数据
@@ -75,7 +75,7 @@ public class YystvReptileService extends ReptileService {
      * @param
      * @return: void
      */
-    @Transactional
+
     public void reptileArticleContent(Long sourceId) {
         // 查询文章列表
         List<ArticleInfoEntity> articleList = articleInfoDao.findAllByStatusAndSourceId(ArticleStatusEnum.NOT_YET.getStatus(), sourceId);
@@ -132,7 +132,8 @@ public class YystvReptileService extends ReptileService {
     }
 
     @Override
-    protected ArticleInfoEntity analysisArticle(String articleUrl, Integer releaseTime, WebInfoEntity webInfoEntity, JSONObject article) {
+    protected ArticleInfoEntity analysisArticle(String articleUrl, Integer releaseTime, WebInfoEntity webInfoEntity, Object articleObj) {
+        JSONObject article = (JSONObject) articleObj;
         ArticleInfoEntity articleInfo = new ArticleInfoEntity();
         articleInfo.setAuthor(article.getString(YystvConstant.ARTICLE_AUTHOR));
         articleInfo.setCreateTime(DateUtil.getCurrentSecond());

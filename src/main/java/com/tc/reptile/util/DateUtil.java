@@ -79,4 +79,8 @@ public class DateUtil {
             return (int) (DateTime.parse(date, formatter).getMillis() / 1000);
         }
     }
+
+    public static void main(String[] args) {
+        System.out.println(getDateSecond("04-28", "MM-dd"));
+    }
 }

@@ -48,6 +48,7 @@ public abstract class ReptileService {
      * @param
      * @return: void
      */
+    @Transactional
     public abstract boolean reptileArticleList(WebInfoEntity webInfoEntity, Map<String, Object> param);
 
     /***
@@ -57,6 +58,7 @@ public abstract class ReptileService {
      * @param
      * @return: void
      */
+    @Transactional
     public abstract void reptileArticleContent(Long sourceId);
 
     /***
@@ -161,6 +163,7 @@ public abstract class ReptileService {
         articleType.setArticleId(articleId);
         articleType.setSourceId(sourceId);
         articleType.setTypeName(type);
+        articleType.setCreateTime(DateUtil.getCurrentSecond());
         articleTypeInfoDao.save(articleType);
     }
 
@@ -173,5 +176,5 @@ public abstract class ReptileService {
      * @param article
      * @return
      */
-    protected abstract ArticleInfoEntity analysisArticle(String articleUrl, Integer releaseTime, WebInfoEntity webInfoEntity, JSONObject article);
+    protected abstract ArticleInfoEntity analysisArticle(String articleUrl, Integer releaseTime, WebInfoEntity webInfoEntity, Object article);
 }
