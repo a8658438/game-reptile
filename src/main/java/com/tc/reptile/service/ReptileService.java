@@ -193,5 +193,5 @@ public abstract class ReptileService {
      * @param article
      * @return
      */
-    protected abstract ArticleInfoEntity analysisArticle(String articleUrl, Integer releaseTime, WebInfoEntity webInfoEntity, Object article);
+    protected abstract ArticleInfoEntity analysisArticle(String articleUrl, Integer releaseTime, WebInfoEntity webInfoEntity, Object articleObj);
 }

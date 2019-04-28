@@ -11,11 +11,16 @@ logging:
 
 config:
   reptile:
-    read-time: 2019-04-26
+    read-time: 2019-04-25
     count-limit: 3
 
   cowlevel:
     account: 13428889873
     password: Will87200407
     login-url: https://cowlevel.net/passport/login/submit
-    type-url: https://cowlevel.net/following/element-data
+    type-url: https://cowlevel.net/following/element-
+
+  vgtime:
+    type-urls[0]: https://www.vgtime.com/topic/index/load.jhtml?page=%s&pageSize=50
+    type-urls[1]: https://www.vgtime.com/channel/list/load.jhtml?page=%s&pageSize=50&type=51
+    type-urls[2]: https://www.vgtime.com/game/eval_list.jhtml?page=%s&pageSize=50

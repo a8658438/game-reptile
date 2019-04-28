@@ -15,13 +15,15 @@ public class ReptileServiceFactory {
     private final GameResReptileService gameResReptileService;
     private final GameLookReptileService gameLookReptileService;
     private final ChuAppReptileService chuAppReptileService;
+    private final VgTimeReptileService vgTimeReptileService;
 
-    public ReptileServiceFactory(YystvReptileService yysService, CowlevelReptileService cowService, GameResReptileService gameResReptileService, GameLookReptileService gameLookReptileService, ChuAppReptileService chuAppReptileService) {
+    public ReptileServiceFactory(YystvReptileService yysService, CowlevelReptileService cowService, GameResReptileService gameResReptileService, GameLookReptileService gameLookReptileService, ChuAppReptileService chuAppReptileService, VgTimeReptileService vgTimeReptileService) {
         this.yysService = yysService;
         this.cowService = cowService;
         this.gameResReptileService = gameResReptileService;
         this.gameLookReptileService = gameLookReptileService;
         this.chuAppReptileService = chuAppReptileService;
+        this.vgTimeReptileService = vgTimeReptileService;
     }
 
     public ReptileService getService(int webId) {
@@ -36,6 +38,8 @@ public class ReptileServiceFactory {
                 return gameLookReptileService;
             case 5:
                 return chuAppReptileService;
+            case 6:
+                return vgTimeReptileService;
             default:
                 return null;
         }

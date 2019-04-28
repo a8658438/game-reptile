@@ -33,6 +33,21 @@ public class HttpUtil {
      * @param param
      * @return: java.util.Optional<com.alibaba.fastjson.JSONArray>
      */
+    public static Optional<Object> getDataForJson(String url) {
+        String response = restTemplate.getForObject(url, String.class);
+        Object data = getResponseData(response);
+        return data == null ? Optional.empty() : Optional.of(data);
+
+    }
+
+    /***
+     * @Author: Chensr
+     * @Description: 调用链接获取数据，返回data数组
+     * @Date: 2019/3/30 14:45
+     * @param url
+     * @param param
+     * @return: java.util.Optional<com.alibaba.fastjson.JSONArray>
+     */
     public static Optional<JSONArray> getDataForJson(String url, Map<String, Object> param) {
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
         param.forEach((k, v) -> {
