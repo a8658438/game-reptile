@@ -18,6 +18,7 @@ import java.util.regex.Pattern;
  */
 public class DateUtil {
     public static final String FORMAT_TYPE_1 = "yyyy-MM-dd";
+    public static final String FORMAT_TYPE_2 = "yyyyMMdd";
     public static final Integer DAY_Millis = 1000 * 60 * 60 * 24;
 
     /**
