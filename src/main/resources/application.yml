@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:mysql://139.199.185.175:3306/reptile?useUnicode=true&characterEncoding=utf-8
+    url: jdbc:mysql://localhost:3306/reptile?useUnicode=true&characterEncoding=utf-8
     username: root
-    password: '!@#$%^&*()Tucxx2019'
+    password: Root@11
     driver-class-name: com.mysql.jdbc.Driver
   jpa:
     show-sql: true
@@ -13,14 +13,14 @@ config:
   reptile:
     read-time: 2019-04-25
     count-limit: 3
-
   cowlevel:
     account: 13428889873
     password: Will87200407
     login-url: https://cowlevel.net/passport/login/submit
     type-url: https://cowlevel.net/following/element-
-
   vgtime:
     type-urls[0]: https://www.vgtime.com/topic/index/load.jhtml?page=%s&pageSize=50
     type-urls[1]: https://www.vgtime.com/channel/list/load.jhtml?page=%s&pageSize=50&type=51
     type-urls[2]: https://www.vgtime.com/game/eval_list.jhtml?page=%s&pageSize=50
+  netease:
+    url: http://play.163.com/special/jingxuan-all-2018_%s/

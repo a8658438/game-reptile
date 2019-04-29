@@ -14,6 +14,7 @@ public class RegexUtil {
     public static String REGEX_GAME_NAME = "《(.*?)》";
     public static String REGEX_CHINESE = "[\u4e00-\u9fa5]";// 中文正则
     public static String REGEX_ENGLISH = "[a-zA-z]"; // 英文正则
+    public static String REGEX_DATE = "[0-9]{2}/[0-9]{4}";
 
     /***
      * @Author: Chensr
@@ -44,5 +45,22 @@ public class RegexUtil {
             set.add(HtmlUtil.delHtmlTag(book).replace(" ", ""));
         }
         return set;
+    }
+
+    /***
+     * @Author: Chensr
+     * @Description: 根据规则查找指定的字符串
+     * @Date: 2019/4/29 16:09
+     * @param str
+ * @param reg
+     * @return: java.lang.String
+    */
+    public static String findStr(String str, String reg) {
+        Pattern pattern = Pattern.compile(reg);
+        Matcher matcher = pattern.matcher(str);
+        while (matcher.find()) {
+            return matcher.group();
+        }
+        return null;
     }
 }
