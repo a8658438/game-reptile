@@ -24,3 +24,5 @@ config:
     type-urls[2]: https://www.vgtime.com/game/eval_list.jhtml?page=%s&pageSize=50
   netease:
     url: http://play.163.com/special/jingxuan-all-2018_%s/
+  gamesky:
+    hot-url: https://click.gamersky.com/Common/GetHits.aspx?id=%s&script=3

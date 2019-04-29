@@ -7,14 +7,18 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * @Author: Chensr
@@ -145,5 +149,10 @@ public class HttpUtil {
             logger.error(e.getMessage(),e);
         }
         return document;
+    }
+
+    public static void main(String[] args) {
+        String forObject = restTemplate.getForObject("https://click.gamersky.com/Common/GetHits.aspx?id=1178882&script=3", String.class);
+        System.out.println();
     }
 }
