@@ -8,7 +8,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 
 @SpringBootApplication
 @EnableAsync
-@EnableConfigurationProperties({ReptileProperties.class, CowlevelProperties.class, VgTimeProperties.class, NetEaseProperties.class, GamerSkyProperties.class})
+@EnableConfigurationProperties({ReptileProperties.class, CowlevelProperties.class, VgTimeProperties.class, NetEaseProperties.class, GamerSkyProperties.class,YingdiProperties.class})
 public class ReptileApplication {
 
     public static void main(String[] args) {

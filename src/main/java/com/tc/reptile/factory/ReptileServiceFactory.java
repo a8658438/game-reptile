@@ -19,8 +19,9 @@ public class ReptileServiceFactory {
     private final NetEaseReptileService netEaseReptileService;
     private final GamerSkyReptileService gamerSkyReptileService;
     private final GcoresReptileService gcoresReptileService;
+    private final YingdiReptileService yingdiReptileService;
 
-    public ReptileServiceFactory(YystvReptileService yysService, CowlevelReptileService cowService, GameResReptileService gameResReptileService, GameLookReptileService gameLookReptileService, ChuAppReptileService chuAppReptileService, VgTimeReptileService vgTimeReptileService, NetEaseReptileService netEaseReptileService, GamerSkyReptileService gamerSkyReptileService, GcoresReptileService gcoresReptileService) {
+    public ReptileServiceFactory(YystvReptileService yysService, CowlevelReptileService cowService, GameResReptileService gameResReptileService, GameLookReptileService gameLookReptileService, ChuAppReptileService chuAppReptileService, VgTimeReptileService vgTimeReptileService, NetEaseReptileService netEaseReptileService, GamerSkyReptileService gamerSkyReptileService, GcoresReptileService gcoresReptileService, YingdiReptileService yingdiReptileService) {
         this.yysService = yysService;
         this.cowService = cowService;
         this.gameResReptileService = gameResReptileService;
@@ -30,6 +31,7 @@ public class ReptileServiceFactory {
         this.netEaseReptileService = netEaseReptileService;
         this.gamerSkyReptileService = gamerSkyReptileService;
         this.gcoresReptileService = gcoresReptileService;
+        this.yingdiReptileService = yingdiReptileService;
     }
 
     public ReptileService getService(int webId) {
@@ -52,6 +54,8 @@ public class ReptileServiceFactory {
                 return gamerSkyReptileService;
             case 9:
                 return gcoresReptileService;
+            case 10:
+                return yingdiReptileService;
             default:
                 return null;
         }

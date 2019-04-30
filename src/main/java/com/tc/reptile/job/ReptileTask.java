@@ -1,5 +1,6 @@
 package com.tc.reptile.job;
 
+import com.tc.reptile.controller.ReptileController;
 import com.tc.reptile.service.WebInfoService;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -16,9 +17,10 @@ import org.springframework.stereotype.Component;
 @EnableScheduling
 public class ReptileTask {
     private final WebInfoService webInfoService;
-
-    public ReptileTask(WebInfoService webInfoService) {
+    private final ReptileController reptileController;
+    public ReptileTask(WebInfoService webInfoService, ReptileController reptileController) {
         this.webInfoService = webInfoService;
+        this.reptileController = reptileController;
     }
 
 
@@ -31,7 +33,8 @@ public class ReptileTask {
     */
     @Scheduled(cron = "0 0 8 * * ?")
     public void reptile() {
-        System.out.println("执行任务");
+        System.out.println("执行定时爬虫任务");
+        reptileController.startReptile(new Long[]{10L});
     }
 
     /***

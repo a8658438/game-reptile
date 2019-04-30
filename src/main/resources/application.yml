@@ -11,7 +11,7 @@ logging:
 
 config:
   reptile:
-    read-time: 2019-04-30
+    read-time: 2019-03-01
     count-limit: 3
   cowlevel:
     account: 13428889873
@@ -26,3 +26,10 @@ config:
     url: http://play.163.com/special/jingxuan-all-2018_%s/
   gamesky:
     hot-url: https://click.gamersky.com/Common/GetHits.aspx?id=%s&script=3
+  yingdi:
+    bbs-post-url: https://www.iyingdi.com/web/bbspost/detail/
+    article-url: https://www.iyingdi.com/web/article/videogame/
+    article-url2: https://www.iyingdi.com/web/article/yingdi/
+    bbs-article-url: https://www.iyingdi.com/bbsplus/post/get?bbsPostId=
+    article-detile-url: https://www.iyingdi.com/article/
+
