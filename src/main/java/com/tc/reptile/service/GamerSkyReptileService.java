@@ -133,6 +133,7 @@ public class GamerSkyReptileService extends ReptileService{
         articleInfo.setTitle(article.getElementsByTag("h3").get(0).child(0).text());
         articleInfo.setUrl(articleUrl);
         articleInfo.setStatus(ArticleStatusEnum.ALREADY.getStatus());
+        articleInfo.setAuthor(article.getElementsByClass("lmu").text().trim());
         articleInfo.setImageUrl(article.getElementsByTag("img").get(0).attr("src"));
         articleInfo.setContentBreviary(article.getElementsByClass("txt").get(0).text());
         return articleInfo;

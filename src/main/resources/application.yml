@@ -11,7 +11,7 @@ logging:
 
 config:
   reptile:
-    read-time: 2019-04-25
+    read-time: 2019-04-30
     count-limit: 3
   cowlevel:
     account: 13428889873
