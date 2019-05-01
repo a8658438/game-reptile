@@ -42,10 +42,10 @@ public class ReptileController {
     }
 
     @PostMapping("/start")
-    public ResultVO startReptile(@RequestParam(value = "sourceIds") Long[] sourceIds) {
+    public ResultVO startReptile(@RequestParam(value = "sourceIds", required = false) Long[] sourceIds) {
         logger.info("需要爬取的网站ID：{}", Arrays.toString(sourceIds));
         // 查询需要爬取的网站信息
-        List<WebInfoEntity> webList = sourceIds == null ? webInfoService.findAll() : webInfoService.findAllByIdIn(sourceIds);
+        List<WebInfoEntity> webList = sourceIds == null || sourceIds.length == 0 ? webInfoService.findAll() : webInfoService.findAllByIdIn(sourceIds);
 
         // 排除已达到当天爬取上限的网站
         StringBuilder s = new StringBuilder();
@@ -59,7 +59,7 @@ public class ReptileController {
         }).collect(Collectors.toList());
 
         if (webList.isEmpty()) {
-            return ResultVO.fail(String.format("爬取失败，以下网站已达到当天爬取次数限制：%s", s.substring(1)));
+            return ResultVO.fail(String.format("爬取失败，以下网站已达到当天爬取次数限制：%s", s.length() == 0 ? "" : s.substring(1)));
         }
 
         // 对爬取操作进行记录

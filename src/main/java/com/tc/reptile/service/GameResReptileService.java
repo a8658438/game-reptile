@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -48,7 +47,7 @@ public class GameResReptileService extends ReptileService {
         for (Element article : articles) {
             Element articleDiv = article.getElementsByClass("feed-item-right").get(0);
             String href = webInfoEntity.getArticleUrl() + articleDiv.child(0).attr("href");
-            Integer releaseTime = DateUtil.getDateSecond(analysisDate(articleDiv.child(2).text()), "yyyy-MM-dd");
+            Integer releaseTime = analysisDate(articleDiv.child(2).text());
 
             // 判断是否达到停止爬取的条件
             if (stopReptile(webInfoEntity.getLastTime(), releaseTime, href)) {
@@ -75,7 +74,10 @@ public class GameResReptileService extends ReptileService {
      * @param str
      * @return: java.lang.String
      */
-    public static String analysisDate(String str) {
+    public static Integer analysisDate(String str) {
+        if ((str.contains("天") || str.contains("小时"))) {
+            return DateUtil.getDateSecond(str, null);
+        }
         str = RegexUtil.replaceReg(RegexUtil.replaceReg(str, RegexUtil.REGEX_CHINESE), RegexUtil.REGEX_ENGLISH);
 
         // 指定日期格式为四位年/两位月份/两位日期，注意yyyy/MM/dd区分大小写；
@@ -83,9 +85,9 @@ public class GameResReptileService extends ReptileService {
         try {
             format.setLenient(false);
             format.parse(str);
-            return str;
+            return DateUtil.getDateSecond(str, DateUtil.FORMAT_TYPE_1);
         } catch (ParseException e) {
-            return new DateTime().getYear() + "-" + str;
+            return DateUtil.getDateSecond(new DateTime().getYear() + "-" + str, DateUtil.FORMAT_TYPE_1);
         }
     }
 
