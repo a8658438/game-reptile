@@ -116,7 +116,7 @@ public class GameLookReptileService extends ReptileService {
         articleInfo.setUrl(articleUrl);
         articleInfo.setStatus(ArticleStatusEnum.NOT_YET.getStatus());
         articleInfo.setTitle(article.child(0).child(0).attr("title"));
-        articleInfo.setImageUrl(article.getElementsByTag("img").attr("src"));
+        articleInfo.setImageUrl(article.getElementsByTag("img").get(0).attr("data-original"));
         return articleInfo;
     }
 }
