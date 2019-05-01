@@ -14,6 +14,7 @@ import java.util.Map;
 
 public class ArticleTypeInfoJdbcDaoImpl extends JdbcDaoSupport implements ArticleTypeInfoJdbcDao {
     Logger logger = LoggerFactory.getLogger(ArticleTypeInfoJdbcDaoImpl.class);
+
     @Autowired
     public ArticleTypeInfoJdbcDaoImpl(DataSource dataSource) {
         setDataSource(dataSource);
@@ -21,13 +22,17 @@ public class ArticleTypeInfoJdbcDaoImpl extends JdbcDaoSupport implements Articl
 
     @Override
     public List<Map<String, Object>> countType(Long webId) {
-        String sql = "select t.type_name as type,count(1) as typeCount from article_type_info t where t.source_id = ? and t.create_time between ? and ? group by t.type_name order by typeCount desc limit 30";
+        String sql = "select t.type_name as type,count(1) as typeCount from article_type_info t where  t.create_time between ? and ? ";
+        if (webId != null) {
+            sql += " and t.source_id =" + webId;
+        }
+        sql += " group by t.type_name order by typeCount desc limit 20";
 
         DateTime dateTime = new DateTime();
         Integer endTime = DateUtil.getDayEndSecond(dateTime);
         Integer startTime = DateUtil.getDayStartSecond(dateTime.plusMonths(-3));
 
-        logger.info(" data with SQL: {},param:{},{}", sql, webId,startTime, endTime);
-        return getJdbcTemplate().queryForList(sql, webId, startTime, endTime);
+        logger.info(" data with SQL: {},param:{},{}", sql, startTime, endTime);
+        return getJdbcTemplate().queryForList(sql, startTime, endTime);
     }
 }

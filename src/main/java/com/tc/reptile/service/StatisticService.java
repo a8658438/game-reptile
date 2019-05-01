@@ -188,19 +188,8 @@ public class StatisticService {
      * @param
      * @return: java.lang.Object
      */
-    public List<ArticleTypeCountDTO> articleTypeCount() {
-        List<ArticleTypeCountDTO> list = new ArrayList<>();
+    public List<Map<String, Object>> articleTypeCount() {
         // 获取网站数量
-        webInfoDao.findAll().forEach(web -> {
-            List<Map<String, Object>> typeList = articleTypeInfoDao.countType(web.getId());
-
-            ArticleTypeCountDTO dto = new ArticleTypeCountDTO();
-            dto.setId(web.getId());
-            dto.setWebName(web.getWebName());
-            dto.setTypeList(typeList);
-
-            list.add(dto);
-        });
-        return list;
+        return articleTypeInfoDao.countType(null);
     }
 }

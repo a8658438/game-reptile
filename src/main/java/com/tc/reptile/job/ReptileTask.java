@@ -31,7 +31,7 @@ public class ReptileTask {
      * @param
      * @return: void
     */
-    @Scheduled(cron = "0/50 0/50 23 * * ?")
+    @Scheduled(cron = "0 0 8 * * ?")
     public void reptile() {
         System.out.println("执行定时爬虫任务");
         reptileController.startReptile(new Long[]{});

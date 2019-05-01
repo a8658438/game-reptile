@@ -64,7 +64,7 @@ public class ReptileController {
 
         // 对爬取操作进行记录
         Integer id = recordService.saveReptileRecord(webList.size());
-        webList.parallelStream().forEach(webInfoEntity -> serviceFactory.getService(webInfoEntity.getId().intValue()).asyncReptileWeb(id, webInfoEntity));
+        webList.forEach(webInfoEntity -> serviceFactory.getService(webInfoEntity.getId().intValue()).asyncReptileWeb(id, webInfoEntity));
 
         String message = "执行成功，请等待爬取工作结束";
         String msg = StringUtils.isEmpty(s.toString()) ? message :
