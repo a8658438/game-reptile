@@ -35,15 +35,13 @@ public class ArticleInfoService {
         articlePage.getContent().forEach(article -> {
             List<GameAppearRecordEntity> list = recordDao.findAllByArticleId(article.getId());
             StringBuilder games = new StringBuilder();
-            list.forEach(record -> {
-                games.append("、" + record.getGameName());
-            });
+            list.forEach(record -> games.append("、" + record.getGameName()));
             article.setIncludeGames(games.length() > 1 ? games.substring(1) : "");
 
             // 查询文章的分类
-//            List<String> typeList = new ArrayList<>();
-//            articleTypeInfoDao.findAllByArticleId(article.getId()).forEach(type -> typeList.add(type.getTypeName()));
-//            article.setTypeList(typeList);
+            List<String> typeList = new ArrayList<>();
+            articleTypeInfoDao.findAllByArticleId(article.getId()).forEach(type -> typeList.add(type.getTypeName()));
+            article.setTypeList(typeList);
         });
         return articlePage;
     }

@@ -9,6 +9,7 @@ import com.tc.reptile.dao.*;
 import com.tc.reptile.entity.ArticleInfoEntity;
 import com.tc.reptile.entity.WebInfoEntity;
 import com.tc.reptile.util.DateUtil;
+import com.tc.reptile.util.HtmlUtil;
 import com.tc.reptile.util.HttpUtil;
 import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
@@ -113,9 +114,9 @@ public class CowlevelReptileService extends ReptileService {
         articleInfo.setSource(webInfoEntity.getWebName());
         articleInfo.setTitle(article.getString(CowlevelConstant.ARTICLE_TITLE));
         articleInfo.setUrl(articleUrl);
-        articleInfo.setStatus(ArticleStatusEnum.NOT_YET.getStatus());
+        articleInfo.setStatus(ArticleStatusEnum.ALREADY.getStatus());
         articleInfo.setImageUrl(article.getString(CowlevelConstant.IMAGE_URL));
-        articleInfo.setContentBreviary(((JSONObject) article.get(CowlevelConstant.BRIEF_CONTENT)).getString("desc"));
+        articleInfo.setContentBreviary(HtmlUtil.getBreviary(StringUtils.isEmpty(article.getString("content")) ? ((JSONObject) article.get(CowlevelConstant.BRIEF_CONTENT)).getString("desc") : article.getString("content")));
         articleInfo.setHot(article.getInteger(CowlevelConstant.HOT));
         return articleInfo;
     }
@@ -200,7 +201,7 @@ public class CowlevelReptileService extends ReptileService {
             });
 
             // 更新文章状态
-            updateArticle(article, null);
+//            updateArticle(article, null);
             threadSleep(2000);
         }
     }
