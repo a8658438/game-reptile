@@ -99,6 +99,9 @@ public class GameResReptileService extends ReptileService {
         for (ArticleInfoEntity article : articleList) {
             logger.info("爬取文章内容，文章ID：{}", article.getId());
             Document document = HttpUtil.getDocument(article.getUrl());
+            if (document == null) {
+                continue;
+            }
 
             String html = document.getElementsByClass("t_f").html();
 
@@ -114,7 +117,7 @@ public class GameResReptileService extends ReptileService {
     public void updateArticle(ArticleInfoEntity articleInfoEntity, Document document) {
         // 更新文章状态和点赞次数
         Elements elements = document.getElementsByClass("layui-icon-fire");
-        if (elements.size() == 0) { // 部分文章没有作者和热度
+        if (elements.size() != 0) { // 部分文章没有作者和热度
             Element info = elements.get(0).parent();
             Double hot1 = Double.parseDouble(info.text().replace("k", "")) * 1000;
             articleInfoEntity.setHot(hot1.intValue());
@@ -147,5 +150,4 @@ public class GameResReptileService extends ReptileService {
         articleInfo.setContentBreviary(article.getElementsByTag("p").get(0).text());
         return articleInfo;
     }
-
 }

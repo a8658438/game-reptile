@@ -70,8 +70,14 @@ public class GamerSkyReptileService extends ReptileService{
             String href = article.getElementsByTag("h3").get(0).child(0).attr("href");
 
             // 爬取文章，获取时间
+            logger.info("爬取文章内容，文章url：{}", href);
             Document document = HttpUtil.getDocument(href);
-            Integer releaseTime = DateUtil.getDateSecond(document.getElementsByClass("time").get(0).text(), "yyyy-MM-dd HH:mm:ss");
+            Elements time = document.getElementsByClass("time");
+            // 有一些专题栏目，是图片来的，无法爬取，跳过
+            if (time.size() == 0) {
+                continue;
+            }
+            Integer releaseTime = DateUtil.getDateSecond(time.get(0).text(), "yyyy-MM-dd HH:mm:ss");
             // 判断是否达到停止爬取的条件
             if (stopReptile(webInfoEntity.getLastTime(), releaseTime, href)) {
                 count++;
@@ -88,7 +94,7 @@ public class GamerSkyReptileService extends ReptileService{
 
             // 保存文章标签,部分文章没有标签
             Elements tags = article.getElementsByClass("tag");
-            if (tags.size() != 0) {
+            if (tags.size() != 0 && tags.get(0).children().size() != 0) {
                 saveArticleType(articleInfoEntity.getId(), webInfoEntity.getId(), tags.get(0).child(0).text());
             }
 

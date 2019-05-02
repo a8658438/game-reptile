@@ -147,12 +147,8 @@ public class HttpUtil {
             document = Jsoup.connect(url).get();
         } catch (IOException e) {
             logger.error(e.getMessage(),e);
+            logger.error("异常URL：{}", url);
         }
         return document;
-    }
-
-    public static void main(String[] args) {
-        String forObject = restTemplate.getForObject("https://click.gamersky.com/Common/GetHits.aspx?id=1178882&script=3", String.class);
-        System.out.println();
     }
 }

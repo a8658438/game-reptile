@@ -9,6 +9,7 @@ import com.tc.reptile.util.DateUtil;
 import com.tc.reptile.util.HtmlUtil;
 import com.tc.reptile.util.HttpUtil;
 import com.tc.reptile.util.RegexUtil;
+import org.aspectj.weaver.ast.Var;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -122,7 +123,11 @@ public class GcoresReptileService extends ReptileService {
 
     @Override
     public void updateArticle(ArticleInfoEntity articleInfoEntity, Document document) {
-        articleInfoEntity.setAuthor(document.getElementsByClass("story_user_name").get(0).text().trim());
+        Elements elements = document.getElementsByClass("story_user_name");
+        // 机核官方文章没有作者名称
+        if (elements.size() != 0) {
+            articleInfoEntity.setAuthor(elements.get(0).text().trim());
+        }
         articleInfoEntity.setContentBreviary(HtmlUtil.getBreviary(document.getElementsByClass("story").html()));
         articleInfoEntity.setStatus(ArticleStatusEnum.ALREADY.getStatus());
         articleInfoDao.save(articleInfoEntity);
