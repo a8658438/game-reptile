@@ -75,13 +75,11 @@ public class DateUtil {
             return DateUtil.getCurrentSecond() - Integer.parseInt(num) * 60 * 60 * 24;
         } else if (date.contains("小时")) {
             return DateUtil.getCurrentSecond() - Integer.parseInt(num) * 60 * 60;
+        } else if (date.contains("分")) {
+            return DateUtil.getCurrentSecond() - Integer.parseInt(num) * 60;
         } else {
             DateTimeFormatter formatter = DateTimeFormat.forPattern(format);
             return (int) (DateTime.parse(date, formatter).getMillis() / 1000);
         }
-    }
-
-    public static void main(String[] args) {
-        System.out.println(getDateSecond("04-28", "MM-dd"));
     }
 }

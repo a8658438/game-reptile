@@ -62,8 +62,11 @@ public class NetEaseReptileService extends ReptileService {
             ArticleInfoEntity articleInfoEntity = analysisArticle(href, releaseTime, webInfoEntity, article);
             articleInfoDao.save(articleInfoEntity);
 
-            // 保存文章标签
-            saveArticleType(articleInfoEntity.getId(), webInfoEntity.getId(), article.getElementsByClass("label").get(0).text());
+            // 保存文章标签,部分文章没有标签
+            Elements label = article.getElementsByClass("label");
+            if (label.size() != 0) {
+                saveArticleType(articleInfoEntity.getId(), webInfoEntity.getId(), label.get(0).text());
+            }
         }
 
         return count == articles.size();

@@ -86,8 +86,11 @@ public class GamerSkyReptileService extends ReptileService{
             articleInfoEntity.setHot(hot);
             articleInfoDao.save(articleInfoEntity);
 
-            // 保存文章标签
-            saveArticleType(articleInfoEntity.getId(), webInfoEntity.getId(), article.getElementsByClass("tag").get(0).child(0).text());
+            // 保存文章标签,部分文章没有标签
+            Elements tags = article.getElementsByClass("tag");
+            if (tags.size() != 0) {
+                saveArticleType(articleInfoEntity.getId(), webInfoEntity.getId(), tags.get(0).child(0).text());
+            }
 
             // 获取分页数据
             Elements page = document.getElementsByClass("page_css");
