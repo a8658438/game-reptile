@@ -113,16 +113,19 @@ public class GameResReptileService extends ReptileService {
     @Override
     public void updateArticle(ArticleInfoEntity articleInfoEntity, Document document) {
         // 更新文章状态和点赞次数
-        Element info = document.getElementsByClass("layui-icon-fire").get(0).parent();
-        Double hot1 = Double.parseDouble(info.text().replace("k", "")) * 1000;
-        articleInfoEntity.setHot(hot1.intValue());
+        Elements elements = document.getElementsByClass("layui-icon-fire");
+        if (elements.size() == 0) { // 部分文章没有作者和热度
+            Element info = elements.get(0).parent();
+            Double hot1 = Double.parseDouble(info.text().replace("k", "")) * 1000;
+            articleInfoEntity.setHot(hot1.intValue());
 
-        // 获取作者信息
-        info.siblingElements().forEach(element -> {
-            if (element.text().contains("作者")) {
-                articleInfoEntity.setAuthor(element.text().replace("作者：", ""));
-            }
-        });
+            // 获取作者信息
+            info.siblingElements().forEach(element -> {
+                if (element.text().contains("作者")) {
+                    articleInfoEntity.setAuthor(element.text().replace("作者：", ""));
+                }
+            });
+        }
 
         articleInfoEntity.setStatus(ArticleStatusEnum.ALREADY.getStatus());
         articleInfoDao.save(articleInfoEntity);
