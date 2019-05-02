@@ -110,6 +110,9 @@ public class GcoresReptileService extends ReptileService {
         for (ArticleInfoEntity article : articleList) {
             logger.info("爬取文章内容，文章ID：{}", article.getId());
             Document document = HttpUtil.getDocument(article.getUrl());
+            if (document == null) { // 出现超时的情况，留到下次爬取
+                continue;
+            }
 
             String html = document.getElementsByClass("story").html();
 

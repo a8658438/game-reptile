@@ -195,6 +195,10 @@ public class CowlevelReptileService extends ReptileService {
         for (ArticleInfoEntity article : articleList) {
             logger.info("爬取文章内容，文章ID：{}, sourceId: {}", article.getId(), sourceId);
             Document document = HttpUtil.getDocument(article.getUrl());
+            if (document == null) { // 出现超时的情况，留到下次爬取
+                continue;
+            }
+
             document.getElementsByClass("related-tag").forEach(element -> {
                 String type = element.child(0).html();
                 saveArticleType(article.getId(), sourceId, type);

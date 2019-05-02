@@ -128,9 +128,13 @@ public class VgTimeReptileService extends ReptileService {
         // 查询文章列表
         List<ArticleInfoEntity> articleList = articleInfoDao.findAllByStatusAndSourceId(ArticleStatusEnum.NOT_YET.getStatus(), sourceId);
 
-        for (ArticleInfoEntity article : articleList) {
+        a: for (ArticleInfoEntity article : articleList) {
             logger.info("爬取文章内容，文章ID：{}", article.getId());
             Document document = HttpUtil.getDocument(article.getUrl());
+            if (document == null) { // 出现超时的情况，留到下次爬取
+                continue;
+            }
+
             // 获取分页数据
             Elements page = document.getElementsByClass("page_con_list");
             int pageSize = page == null || page.size() == 0 ? 0 : page.get(0).children().size();
@@ -139,6 +143,9 @@ public class VgTimeReptileService extends ReptileService {
             // 循环获取余下的分页数据
             for (int i = 2; i <= pageSize; i++) {
                 Document d = HttpUtil.getDocument(article.getUrl() + "?page=" + i);
+                if (d == null) {
+                    continue a;
+                }
                 html.append(d.getElementsByClass("topicContent").html());
             }
 

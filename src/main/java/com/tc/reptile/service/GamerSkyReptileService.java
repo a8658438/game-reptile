@@ -72,6 +72,10 @@ public class GamerSkyReptileService extends ReptileService{
             // 爬取文章，获取时间
             logger.info("爬取文章内容，文章url：{}", href);
             Document document = HttpUtil.getDocument(href);
+            if (document == null) { // 出现超时的情况，留到下次爬取
+                continue;
+            }
+
             Elements time = document.getElementsByClass("time");
             // 有一些专题栏目，是图片来的，无法爬取，跳过
             if (time.size() == 0) {

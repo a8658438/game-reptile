@@ -84,6 +84,9 @@ public class YystvReptileService extends ReptileService {
         for (ArticleInfoEntity article : articleList) {
             logger.info("爬取文章内容，文章ID：{}", article.getId());
             Document document = HttpUtil.getYysArticleDocument(article.getUrl(), "http://www.yystv.cn/");
+            if (document == null) { // 出现超时的情况，留到下次爬取
+                continue;
+            }
 
             String html = document.getElementsByClass(YystvConstant.ARTICLE_CONTENT).get(0).child(0).html();
             String type = document.getElementsByClass(YystvConstant.ARTICLE_TYPE).get(0).text();
