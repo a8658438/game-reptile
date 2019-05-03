@@ -61,7 +61,7 @@ public class ArticleInfoJdbcDaoImpl extends JdbcDaoSupport implements ArticleInf
             params.add(param.getContent());
         }
         if (!StringUtils.isEmpty(param.getType())) {
-            sql.append(" and t.type like concat('%',?,'%')");
+            sql.append(" and t.id in (select distinct(a.article_id) from article_type_info a where a.type_name like concat('%',?,'%'))");
             params.add(param.getType());
         }
 

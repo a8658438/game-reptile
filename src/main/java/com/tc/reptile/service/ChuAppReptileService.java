@@ -1,10 +1,7 @@
 package com.tc.reptile.service;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.tc.reptile.config.ReptileProperties;
 import com.tc.reptile.constant.ArticleStatusEnum;
-import com.tc.reptile.constant.YystvConstant;
 import com.tc.reptile.dao.*;
 import com.tc.reptile.entity.ArticleInfoEntity;
 import com.tc.reptile.entity.WebInfoEntity;
@@ -19,14 +16,14 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @Author: Chensr
@@ -68,7 +65,7 @@ public class ChuAppReptileService extends ReptileService{
             String articleUrl = webInfoEntity.getArticleUrl() + article.attr("href");
             System.out.println(article.attr("title"));
             String date = article.getElementsByTag("em").get(0).parent().text();
-            Integer releaseTime = DateUtil.getDateSecond(analysisDate(date), DateUtil.FORMAT_TYPE_2);
+            Integer releaseTime = analysisDate(date);
 
             // 判断是否达到停止爬取的条件
             if (stopReptile(webInfoEntity.getLastTime(), releaseTime, articleUrl)) {
@@ -95,18 +92,26 @@ public class ChuAppReptileService extends ReptileService{
      * @param str
      * @return: java.lang.String
      */
-    public static String analysisDate(String str) {
-        str = RegexUtil.replaceReg(RegexUtil.replaceReg(str, RegexUtil.REGEX_CHINESE), RegexUtil.REGEX_ENGLISH);
+    public static Integer analysisDate(String str) {
+        // 取得字符串中的数字
+        Pattern p = Pattern.compile("[^0-9]");
+        Matcher m = p.matcher(str);
+        String num = m.replaceAll("");
+        if (str.contains("小时")) {
+            return DateUtil.getCurrentSecond() - Integer.parseInt(num) * 60 * 60;
+        } else if (str.contains("分")) {
+            return DateUtil.getCurrentSecond() - Integer.parseInt(num) * 60;
+        }
 
+        str = RegexUtil.replaceReg(RegexUtil.replaceReg(str, RegexUtil.REGEX_CHINESE), RegexUtil.REGEX_ENGLISH);
         // 指定日期格式为四位年/两位月份/两位日期，注意yyyy/MM/dd区分大小写；
         SimpleDateFormat format = new SimpleDateFormat(DateUtil.FORMAT_TYPE_2);
         try {
             format.setLenient(false);
-            format.parse(str);
-            return str;
+            return (int)format.parse(str).getTime();
         } catch (ParseException e) {
             str = str.substring(str.length() - 4); // 只获取最后4位数字日期，排除其他干扰
-            return new DateTime().getYear() + str;
+            return DateUtil.getDateSecond(new DateTime().getYear() + str, DateUtil.FORMAT_TYPE_2);
         }
     }
 
