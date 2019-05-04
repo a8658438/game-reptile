@@ -34,7 +34,7 @@ public class ReptileTask {
     @Scheduled(cron = "0 0 8 * * ?")
     public void reptile() {
         System.out.println("执行定时爬虫任务");
-        reptileController.startReptile(new Long[]{});
+        reptileController.startReptile(new Long[]{}, 1);
     }
 
     /***

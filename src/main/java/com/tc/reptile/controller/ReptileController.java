@@ -42,7 +42,7 @@ public class ReptileController {
     }
 
     @PostMapping("/start")
-    public ResultVO startReptile(@RequestParam(value = "sourceIds", required = false) Long[] sourceIds) {
+    public ResultVO startReptile(@RequestParam(value = "sourceIds", required = false) Long[] sourceIds, @RequestParam(value = "isAuto", required = false,defaultValue = "0") Integer isAuto) {
         logger.info("需要爬取的网站ID：{}", Arrays.toString(sourceIds));
         // 查询需要爬取的网站信息
         List<WebInfoEntity> webList = sourceIds == null || sourceIds.length == 0 ? webInfoService.findAll() : webInfoService.findAllByIdIn(sourceIds);
@@ -50,7 +50,8 @@ public class ReptileController {
         // 排除已达到当天爬取上限的网站
         StringBuilder s = new StringBuilder();
         webList = webList.stream().filter(webInfoEntity -> {
-            if (webInfoEntity.getReptileCount() < properties.getCountLimit()) {
+            Integer limit = isAuto.equals(1) ? properties.getCountLimit() : properties.getCountLimit() - 1;
+            if (webInfoEntity.getReptileCount() < limit) {
                 return true;
             }
 
@@ -63,8 +64,8 @@ public class ReptileController {
         }
 
         // 对爬取操作进行记录
-        Integer id = recordService.saveReptileRecord(webList.size());
-        webList.forEach(webInfoEntity -> serviceFactory.getService(webInfoEntity.getId().intValue()).asyncReptileWeb(id, webInfoEntity));
+//        Integer id = recordService.saveReptileRecord(webList.size());
+//        webList.forEach(webInfoEntity -> serviceFactory.getService(webInfoEntity.getId().intValue()).asyncReptileWeb(id, webInfoEntity));
 
         String message = "执行成功，请等待爬取工作结束";
         String msg = StringUtils.isEmpty(s.toString()) ? message :

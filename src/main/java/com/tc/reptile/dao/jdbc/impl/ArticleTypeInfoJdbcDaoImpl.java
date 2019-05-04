@@ -26,7 +26,7 @@ public class ArticleTypeInfoJdbcDaoImpl extends JdbcDaoSupport implements Articl
         if (webId != null) {
             sql += " and t.source_id =" + webId;
         }
-        sql += " group by t.type_name order by typeCount desc limit 20";
+        sql += " group by t.type_name order by typeCount desc limit 100";
 
         DateTime dateTime = new DateTime();
         Integer endTime = DateUtil.getDayEndSecond(dateTime);
