@@ -1,6 +1,5 @@
 package com.tc.reptile.service;
 
-import com.alibaba.fastjson.JSONObject;
 import com.tc.reptile.config.ReptileProperties;
 import com.tc.reptile.dao.*;
 import com.tc.reptile.entity.*;
@@ -119,7 +118,7 @@ public abstract class ReptileService {
 
 
     @Async
-    public void asyncReptileWeb(Integer currentSecond, WebInfoEntity webInfoEntity){
+    public void asyncReptileWeb(Integer currentSecond, WebInfoEntity webInfoEntity, Integer isAuto){
         Map<String, Object> param = new HashMap<>();
         for (int i = 1; i < 999; i++) {
             logger.info("开始爬取网站:{},当前爬取页数:{}", webInfoEntity.getWebName(), i);
@@ -135,7 +134,7 @@ public abstract class ReptileService {
 
         // 爬取文章内容
         reptileArticleContent(webInfoEntity.getId());
-        repticleComplete(currentSecond, webInfoEntity);
+        repticleComplete(currentSecond, webInfoEntity, isAuto);
     }
 
     /**
@@ -153,15 +152,19 @@ public abstract class ReptileService {
 
     /**
      * 爬取结束，更新爬取记录
-     *
-     * @param currentSecond
+     *  @param currentSecond
      * @param webInfoEntity
+     * @param isAuto
      */
     @Transactional
-    public void repticleComplete(Integer currentSecond, WebInfoEntity webInfoEntity) {
+    public void repticleComplete(Integer currentSecond, WebInfoEntity webInfoEntity, Integer isAuto) {
         // 更新网站信息
         webInfoEntity.setLastTime(DateUtil.getCurrentSecond());
-        webInfoEntity.setReptileCount(webInfoEntity.getReptileCount() + 1);
+        if (isAuto.equals(1)) {
+            webInfoEntity.setAutoReptileCount(webInfoEntity.getAutoReptileCount() + 1);
+        } else {
+            webInfoEntity.setReptileCount(webInfoEntity.getReptileCount() + 1);
+        }
         webInfoDao.save(webInfoEntity);
 
         // 更新爬取记录信息
@@ -190,7 +193,7 @@ public abstract class ReptileService {
      * @param articleUrl
      * @param releaseTime
      * @param webInfoEntity
-     * @param article
+     * @param articleObj
      * @return
      */
     protected abstract ArticleInfoEntity analysisArticle(String articleUrl, Integer releaseTime, WebInfoEntity webInfoEntity, Object articleObj);

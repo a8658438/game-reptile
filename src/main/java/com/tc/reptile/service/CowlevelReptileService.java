@@ -16,7 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
@@ -67,7 +66,7 @@ public class CowlevelReptileService extends ReptileService {
     }
 
     @Override
-    public void asyncReptileWeb(Integer currentSecond, WebInfoEntity webInfoEntity) {
+    public void asyncReptileWeb(Integer currentSecond, WebInfoEntity webInfoEntity, Integer isAuto) {
         // 校验是否登录成功
         token = login();
         if (StringUtils.isEmpty(token)) {
@@ -100,7 +99,7 @@ public class CowlevelReptileService extends ReptileService {
         // 爬取文章内容
         reptileArticleContent(webInfoEntity.getId());
         // 更新网站信息
-        repticleComplete(currentSecond, webInfoEntity);
+        repticleComplete(currentSecond, webInfoEntity, isAuto);
     }
 
     @Override

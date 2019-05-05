@@ -10,9 +10,7 @@ import com.tc.reptile.entity.ArticleInfoEntity;
 import com.tc.reptile.entity.WebInfoEntity;
 import com.tc.reptile.util.DateUtil;
 import com.tc.reptile.util.HtmlUtil;
-import com.tc.reptile.util.HttpUtil;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -22,7 +20,6 @@ import org.springframework.web.client.RestTemplate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * @Author: Chensr
@@ -43,7 +40,7 @@ public class YingdiReptileService extends ReptileService {
     private Integer lastId = null;
 
     @Override
-    public void asyncReptileWeb(Integer currentSecond, WebInfoEntity webInfoEntity) {
+    public void asyncReptileWeb(Integer currentSecond, WebInfoEntity webInfoEntity, Integer isAuto) {
         String articleUrl = webInfoEntity.getUrl();
         Map map = new HashMap();
         for (int x = 1; x <= 2; x++) {
@@ -68,7 +65,7 @@ public class YingdiReptileService extends ReptileService {
         webInfoEntity.setUrl(articleUrl);
         // 爬取文章内容
         reptileArticleContent(webInfoEntity.getId());
-        repticleComplete(currentSecond, webInfoEntity);
+        repticleComplete(currentSecond, webInfoEntity, isAuto);
     }
 
     @Override

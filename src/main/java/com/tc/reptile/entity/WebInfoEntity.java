@@ -45,8 +45,20 @@ public class WebInfoEntity implements Serializable {
 	 */
 	@Column(name = "reptile_count")
 	private Integer reptileCount;
+	/**
+	 * 当天已自动爬取数量
+	 */
+	@Column(name = "auto_reptile_count")
+	private Integer autoReptileCount;
 
 
+	public Integer getAutoReptileCount() {
+		return autoReptileCount;
+	}
+
+	public void setAutoReptileCount(Integer autoReptileCount) {
+		this.autoReptileCount = autoReptileCount;
+	}
 
 	public static long getSerialVersionUID() {
 		return serialVersionUID;

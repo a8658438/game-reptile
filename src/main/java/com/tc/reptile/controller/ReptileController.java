@@ -50,8 +50,7 @@ public class ReptileController {
         // 排除已达到当天爬取上限的网站
         StringBuilder s = new StringBuilder();
         webList = webList.stream().filter(webInfoEntity -> {
-            Integer limit = isAuto.equals(1) ? properties.getCountLimit() : properties.getCountLimit() - 1;
-            if (webInfoEntity.getReptileCount() < limit) {
+            if (isAuto.equals(1) || webInfoEntity.getReptileCount() < properties.getCountLimit()) {
                 return true;
             }
 
@@ -64,8 +63,8 @@ public class ReptileController {
         }
 
         // 对爬取操作进行记录
-//        Integer id = recordService.saveReptileRecord(webList.size());
-//        webList.forEach(webInfoEntity -> serviceFactory.getService(webInfoEntity.getId().intValue()).asyncReptileWeb(id, webInfoEntity));
+        Integer id = recordService.saveReptileRecord(webList.size());
+        webList.forEach(webInfoEntity -> serviceFactory.getService(webInfoEntity.getId().intValue()).asyncReptileWeb(id, webInfoEntity, isAuto));
 
         String message = "执行成功，请等待爬取工作结束";
         String msg = StringUtils.isEmpty(s.toString()) ? message :

@@ -9,7 +9,6 @@ import com.tc.reptile.util.DateUtil;
 import com.tc.reptile.util.HtmlUtil;
 import com.tc.reptile.util.HttpUtil;
 import com.tc.reptile.util.RegexUtil;
-import org.aspectj.weaver.ast.Var;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -34,7 +33,7 @@ public class GcoresReptileService extends ReptileService {
     }
 
     @Override
-    public void asyncReptileWeb(Integer currentSecond, WebInfoEntity webInfoEntity) {
+    public void asyncReptileWeb(Integer currentSecond, WebInfoEntity webInfoEntity, Integer isAuto) {
         String articleUrl = webInfoEntity.getUrl();
         for (int x = 1; x <= 2; x++) {
             for (int i = 1; i < 999; i++) {
@@ -55,7 +54,7 @@ public class GcoresReptileService extends ReptileService {
         webInfoEntity.setUrl(articleUrl);
         // 爬取文章内容
         reptileArticleContent(webInfoEntity.getId());
-        repticleComplete(currentSecond, webInfoEntity);
+        repticleComplete(currentSecond, webInfoEntity, isAuto);
     }
 
     @Override

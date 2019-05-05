@@ -5,7 +5,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.tc.reptile.config.ReptileProperties;
 import com.tc.reptile.config.VgTimeProperties;
 import com.tc.reptile.constant.ArticleStatusEnum;
-import com.tc.reptile.constant.YystvConstant;
 import com.tc.reptile.dao.*;
 import com.tc.reptile.entity.ArticleInfoEntity;
 import com.tc.reptile.entity.WebInfoEntity;
@@ -35,7 +34,7 @@ public class VgTimeReptileService extends ReptileService {
     }
 
     @Override
-    public void asyncReptileWeb(Integer currentSecond, WebInfoEntity webInfoEntity) {
+    public void asyncReptileWeb(Integer currentSecond, WebInfoEntity webInfoEntity, Integer isAuto) {
         vgProperties.getTypeUrls().forEach(url -> {
             for (int i = 1; i < 999; i++) {
                 logger.info("开始爬取网站:{},当前爬取页数:{}, 分类URL：{}", webInfoEntity.getWebName(), i, url);
@@ -53,7 +52,7 @@ public class VgTimeReptileService extends ReptileService {
 
         // 爬取文章内容
         reptileArticleContent(webInfoEntity.getId());
-        repticleComplete(currentSecond, webInfoEntity);
+        repticleComplete(currentSecond, webInfoEntity, isAuto);
     }
 
     @Override

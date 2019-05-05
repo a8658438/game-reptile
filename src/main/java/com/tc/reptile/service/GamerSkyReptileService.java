@@ -37,7 +37,7 @@ public class GamerSkyReptileService extends ReptileService{
     }
 
     @Async
-    public void asyncReptileWeb(Integer currentSecond, WebInfoEntity webInfoEntity){
+    public void asyncReptileWeb(Integer currentSecond, WebInfoEntity webInfoEntity, Integer isAuto){
         Map<String, Object> param = new HashMap<>();
         for (int i = 1; i < 999; i++) {
             logger.info("开始爬取网站:{},当前爬取页数:{}", webInfoEntity.getWebName(), i);
@@ -51,7 +51,7 @@ public class GamerSkyReptileService extends ReptileService{
             threadSleep(2000);
         }
 
-        repticleComplete(currentSecond, webInfoEntity);
+        repticleComplete(currentSecond, webInfoEntity, isAuto);
     }
 
     @Override

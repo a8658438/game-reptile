@@ -56,7 +56,10 @@ public class WebInfoService {
      */
     public void resetReptileCount() {
         List<WebInfoEntity> list = webInfoDao.findAll();
-        list.forEach(web -> web.setReptileCount(0));
+        list.forEach(web -> {
+            web.setReptileCount(0);
+            web.setAutoReptileCount(0);
+        });
         webInfoDao.saveAll(list);
     }
 }

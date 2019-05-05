@@ -12,7 +12,7 @@ logging:
 config:
   reptile:
     read-time: 2019-03-01
-    count-limit: 3
+    count-limit: 2
   cowlevel:
     account: 13428889873
     password: Will87200407
